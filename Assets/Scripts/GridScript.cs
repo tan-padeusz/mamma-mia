@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 public class GridScript : MonoBehaviour
 {
         [Header("Cameras")]
-        [SerializeField] private Camera bluePlayerCamera;
-        [SerializeField] private Camera redPlayerCamera;
+        [SerializeField] private Camera playerBlueCamera;
+        [SerializeField] private Camera playerRedCamera;
         
         [Header("Grid")]
         [SerializeField] private int gridLevel;
@@ -80,11 +79,11 @@ public class GridScript : MonoBehaviour
 
                 var playerBlue = Instantiate(this.playerPrefab, playerBluePosition, new Quaternion());
                 var playerBlueScript = playerBlue.GetComponent<PlayerScript>();
-                if (playerBlueScript != null) playerBlueScript.ResetPlayer(Team.Blue, this.bluePlayerCamera.transform);
+                if (playerBlueScript != null) playerBlueScript.ResetPlayer(Team.Blue, this.playerBlueCamera.transform);
 
                 var playerRed = Instantiate(this.playerPrefab, playerRedPosition, new Quaternion());
                 var playerRedScript = playerRed.GetComponent<PlayerScript>();
-                if (playerRedScript != null) playerRedScript.ResetPlayer(Team.Red, this.redPlayerCamera.transform);
+                if (playerRedScript != null) playerRedScript.ResetPlayer(Team.Red, this.playerRedCamera.transform);
                 
                 playerBlue.transform.LookAt(new Vector3(0, 0.5F, 0));
                 playerRed.transform.LookAt(new Vector3(0, 0.5F, 0));
@@ -137,6 +136,7 @@ public class GridScript : MonoBehaviour
 
         private void SpawnTurrets()
         {
+                TurretManager.Instance.SetTurretCount(this.teamSize);
                 for (var index = 0; index < this.teamSize * 2; index++)
                 {
                         int row, column;
@@ -155,7 +155,7 @@ public class GridScript : MonoBehaviour
                         var turretScript = turret.GetComponent<TurretScript>();
                         if (turretScript == null) return;
                         var team = index % 2 == 0 ? Team.Blue : Team.Red;
-                        turretScript.ResetTurret(team);
+                        turretScript.ResetTurret(team, true);
                 }
         }
 }

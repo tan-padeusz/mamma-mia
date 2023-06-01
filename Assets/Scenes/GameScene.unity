@@ -474,7 +474,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1225112980}
   - component: {fileID: 1225112982}
+  - component: {fileID: 1225112984}
   - component: {fileID: 1225112983}
+  - component: {fileID: 1225112985}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -517,8 +519,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5d24385a6404185b2a25a66e7e63566, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bluePlayerCamera: {fileID: 586360323}
-  redPlayerCamera: {fileID: 111758048}
+  playerBlueCamera: {fileID: 586360323}
+  playerRedCamera: {fileID: 111758048}
   gridLevel: 0
   nodeDistance: 7.5
   obstacles: 5
@@ -527,3 +529,30 @@ MonoBehaviour:
   obstacleRowPrefab: {fileID: 4697184305417140046, guid: b29848c6e17345b43b4e638b7c9ba0e8, type: 3}
   playerPrefab: {fileID: 598931724242233961, guid: bffe5195298770f459447569f660d12d, type: 3}
   turretPrefab: {fileID: 5662805474141995351, guid: 6dab08eab5e59f34cb6e58d2dae17f7c, type: 3}
+--- !u!114 &1225112984
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1225112979}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af02dd67706fdf44c947e9f2130e8a97, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  teamBlueMaterial: {fileID: 2100000, guid: 315ad2d159b7f7a45b737ce70099be02, type: 2}
+  teamNeutralMaterial: {fileID: 2100000, guid: 15941976402173c478cf360883a5beaa, type: 2}
+  teamRedMaterial: {fileID: 2100000, guid: 6191b28f967500e45ab5b09d4f610d61, type: 2}
+--- !u!114 &1225112985
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1225112979}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f5eb9491d21069438ff1f3a12d0c5c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerScript : MonoBehaviour
@@ -33,10 +32,9 @@ public class PlayerScript : MonoBehaviour
     private void Update()
     {
         this._myRenderer.material = this._myMaterial;
-        
-        if (this._cameraTransform == null) return;
+        if (this._cameraTransform != null) this._playerAction?.Invoke();
 
-        this._playerAction?.Invoke();
+        
     }
 
     private void PlayerBlueAction()

@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class BulletScript : MonoBehaviour
 {
@@ -9,7 +8,7 @@ public class BulletScript : MonoBehaviour
 
     private Material _myMaterial;
     private Team _myTeam = Team.Neutral;
-    private float _startTime = 0F;
+    private float _startTime;
     private Renderer _myRenderer;
 
     private void SelfDestruct()
@@ -45,7 +44,7 @@ public class BulletScript : MonoBehaviour
                 var turretMaterial = turretScript.GetTurretMaterial();
                 if (turretMaterial.name == this._myMaterial.name) return;
                 var remainingHealth = turretScript.DecreaseHealth();
-                if (remainingHealth == 0) turretScript.ResetTurret(this._myTeam);
+                if (remainingHealth == 0) turretScript.ResetTurret(this._myTeam, false);
             }
         }
         this.SelfDestruct();
