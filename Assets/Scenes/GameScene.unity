@@ -190,14 +190,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 111758047}
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 1.7308793, y: 0.5, z: 3.5396147}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &586360322
 GameObject:
   m_ObjectHideFlags: 0
@@ -265,14 +265,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 586360322}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.8578877, y: 0.5, z: -4.478513}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -473,7 +473,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1225112980}
-  - component: {fileID: 1225112981}
   - component: {fileID: 1225112982}
   - component: {fileID: 1225112983}
   m_Layer: 0
@@ -498,20 +497,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1225112981
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1225112979}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 40bdd587e19ea8c4b9836a7ce593fd2c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerFirst: {fileID: 0}
-  playerSecond: {fileID: 0}
 --- !u!81 &1225112982
 AudioListener:
   m_ObjectHideFlags: 0
@@ -536,11 +521,9 @@ MonoBehaviour:
   redPlayerCamera: {fileID: 111758048}
   gridLevel: 0
   nodeDistance: 7.5
+  obstacles: 5
   teamSize: 3
-  blueTeamMaterial: {fileID: 2100000, guid: 315ad2d159b7f7a45b737ce70099be02, type: 2}
-  redTeamMaterial: {fileID: 2100000, guid: 6191b28f967500e45ab5b09d4f610d61, type: 2}
-  blueBulletPrefab: {fileID: 4369358113381285050, guid: 0e14f318345886a49b546fed9e4f3a6a, type: 3}
-  bluePlayerPrefab: {fileID: 598931724242233961, guid: 2eaca7443bbba7345a03f74a04e89f4c, type: 3}
-  redBulletPrefab: {fileID: 4369358113381285050, guid: 023f2e0c47f1b1c41bf933bbb446074a, type: 3}
-  redPlayerPrefab: {fileID: 6194345106200071485, guid: 1037d0bc33e82ec4e8c8ea2b3916c9c0, type: 3}
+  obstacleColumnPrefab: {fileID: 4697184305417140046, guid: 376e3f7d98981ee428c73bc5ce47469e, type: 3}
+  obstacleRowPrefab: {fileID: 4697184305417140046, guid: b29848c6e17345b43b4e638b7c9ba0e8, type: 3}
+  playerPrefab: {fileID: 598931724242233961, guid: bffe5195298770f459447569f660d12d, type: 3}
   turretPrefab: {fileID: 5662805474141995351, guid: 6dab08eab5e59f34cb6e58d2dae17f7c, type: 3}

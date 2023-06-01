@@ -13,9 +13,10 @@ GameObject:
   - component: {fileID: 5662805474141995344}
   - component: {fileID: 5662805474141995345}
   - component: {fileID: 5662805474141995350}
+  - component: {fileID: 3778950029741369714}
   m_Layer: 0
   m_Name: Turret
-  m_TagString: Untagged
+  m_TagString: Turret
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -110,7 +111,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71f8b858edad4e86b7e6c0d59b4d0e47, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bulletPrefab: {fileID: 4369358113381285050, guid: 5df402aba81c77a47a8f0896b2d144f4, type: 3}
   bulletInterval: 0.95
   baseHealth: 4
   maxRotation: 30
+  teamBlueMaterial: {fileID: 2100000, guid: 315ad2d159b7f7a45b737ce70099be02, type: 2}
+  teamNeutralMaterial: {fileID: 2100000, guid: 15941976402173c478cf360883a5beaa, type: 2}
+  teamRedMaterial: {fileID: 2100000, guid: 6191b28f967500e45ab5b09d4f610d61, type: 2}
+  bulletPrefab: {fileID: 4369358113381285050, guid: 5df402aba81c77a47a8f0896b2d144f4, type: 3}
+--- !u!54 &3778950029741369714
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5662805474141995351}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 94
+  m_CollisionDetection: 0

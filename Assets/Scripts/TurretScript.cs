@@ -6,7 +6,6 @@ public class TurretScript : MonoBehaviour
 {
     [Header("Bullet")]
     [SerializeField] private float bulletInterval = 0.95F;
-    private GameObject _bulletPrefab;
     private bool _canShoot = true;
     
     [Header("Turret")]
@@ -14,13 +13,32 @@ public class TurretScript : MonoBehaviour
     private int _health;
     [SerializeField] private float maxRotation = 30F;
 
+    [Header("Materials")]
+    [SerializeField] private Material teamBlueMaterial;
+    [SerializeField] private Material teamNeutralMaterial;
+    [SerializeField] private Material teamRedMaterial;
+
+    [Header("Prefabs")]
+    [SerializeField] private GameObject bulletPrefab;
+
+    private Renderer _myRenderer;
+    private Material _myMaterial;
+    private Team _myTeam;
+    
+    public Material GetTurretMaterial()
+    {
+        return this._myRenderer.material;
+    }
+
     private void Start()
     {
         this._health = this.baseHealth;
+        this._myRenderer = this.GetComponent<Renderer>();
     }
 
     private void Update()
     {
+        this._myRenderer.material = this._myMaterial;
         if (!this._canShoot) return;
         this.StartCoroutine(this.ShootBullet());
     }
@@ -28,11 +46,15 @@ public class TurretScript : MonoBehaviour
     private IEnumerator ShootBullet()
     {
         this._canShoot = false;
-        var thisTransform = this.transform;
+        var myTransform = this.transform;
         var rotation = Random.Range(-this.maxRotation, this.maxRotation);
-        thisTransform.Rotate(0, rotation, 0);
-        var bulletPosition = thisTransform.position + thisTransform.forward;
-        Instantiate(this._bulletPrefab, bulletPosition, thisTransform.rotation);
+        myTransform.Rotate(0, rotation, 0);
+        var bulletPosition = myTransform.position + myTransform.forward;
+        
+        var bullet = Instantiate(this.bulletPrefab, bulletPosition, myTransform.rotation);
+        var bulletScript = bullet.GetComponent<BulletScript>();
+        if (bulletScript != null) bulletScript.ResetBullet(this._myTeam);
+        
         yield return new WaitForSeconds(this.bulletInterval);
         this._canShoot = true;
     }
@@ -42,10 +64,15 @@ public class TurretScript : MonoBehaviour
         return --this._health;
     }
 
-    public void ResetTurret(GameObject bulletPrefab, Material turretMaterial)
+    public void ResetTurret(Team team)
     {
         this._health = this.baseHealth;
-        this._bulletPrefab = bulletPrefab;
-        this.GetComponent<Renderer>().material = turretMaterial;
+        this._myTeam = team;
+        this._myMaterial = team switch
+        {
+            Team.Blue => this.teamBlueMaterial,
+            Team.Red => this.teamRedMaterial,
+            _ => this.teamNeutralMaterial
+        };
     }
 }
