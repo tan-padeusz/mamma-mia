@@ -7,11 +7,6 @@ public class BulletScript : MonoBehaviour
     [SerializeField] private float destroyAfterSeconds = 4F;
     [SerializeField] private float speed = 15F;
 
-    [Header("Materials")]
-    [SerializeField] private Material teamBlueMaterial;
-    [SerializeField] private Material teamRedMaterial;
-    [SerializeField] private Material teamNeutralMaterial;
-
     private Material _myMaterial;
     private Team _myTeam = Team.Neutral;
     private float _startTime = 0F;
@@ -59,11 +54,6 @@ public class BulletScript : MonoBehaviour
     public void ResetBullet(Team team)
     {
         this._myTeam = team;
-        this._myMaterial = team switch
-        {
-            Team.Blue => this.teamBlueMaterial,
-            Team.Red => this.teamRedMaterial,
-            _ => this.teamNeutralMaterial
-        };
+        this._myMaterial = MaterialManager.Instance.GetMaterialByTeam(team);
     }
 }

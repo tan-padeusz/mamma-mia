@@ -13,11 +13,6 @@ public class TurretScript : MonoBehaviour
     private int _health;
     [SerializeField] private float maxRotation = 30F;
 
-    [Header("Materials")]
-    [SerializeField] private Material teamBlueMaterial;
-    [SerializeField] private Material teamNeutralMaterial;
-    [SerializeField] private Material teamRedMaterial;
-
     [Header("Prefabs")]
     [SerializeField] private GameObject bulletPrefab;
 
@@ -68,11 +63,6 @@ public class TurretScript : MonoBehaviour
     {
         this._health = this.baseHealth;
         this._myTeam = team;
-        this._myMaterial = team switch
-        {
-            Team.Blue => this.teamBlueMaterial,
-            Team.Red => this.teamRedMaterial,
-            _ => this.teamNeutralMaterial
-        };
+        this._myMaterial = MaterialManager.Instance.GetMaterialByTeam(team);
     }
 }

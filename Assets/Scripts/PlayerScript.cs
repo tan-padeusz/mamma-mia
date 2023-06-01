@@ -16,11 +16,6 @@ public class PlayerScript : MonoBehaviour
     private Transform _cameraTransform;
     private bool _canShoot = true;
     
-    [Header("Materials")]
-    [SerializeField] private Material teamBlueMaterial;
-    [SerializeField] private Material teamRedMaterial;
-    [SerializeField] private Material teamNeutralMaterial;
-    
     private Team _myTeam;
     private Material _myMaterial;
     private Renderer _myRenderer;
@@ -96,12 +91,7 @@ public class PlayerScript : MonoBehaviour
     public void ResetPlayer(Team team, Transform cameraTransform)
     {
         this._myTeam = team;
-        this._myMaterial = team switch
-        {
-            Team.Blue => this.teamBlueMaterial,
-            Team.Red => this.teamRedMaterial,
-            _ => this.teamNeutralMaterial
-        };
+        this._myMaterial = MaterialManager.Instance.GetMaterialByTeam(team);
 
         this._playerAction = team switch
         {
