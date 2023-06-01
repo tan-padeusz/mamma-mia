@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class GridScript : MonoBehaviour
+public class GridManager : MonoBehaviour
 {
         [Header("Cameras")]
         [SerializeField] private Camera playerBlueCamera;
@@ -136,7 +136,7 @@ public class GridScript : MonoBehaviour
 
         private void SpawnTurrets()
         {
-                TurretManager.Instance.SetTurretCount(this.teamSize);
+                // TurretManager.Instance.SetTurretCount(this.teamSize);
                 for (var index = 0; index < this.teamSize * 2; index++)
                 {
                         int row, column;

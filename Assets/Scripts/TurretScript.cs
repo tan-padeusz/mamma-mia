@@ -15,6 +15,11 @@ public class TurretScript : MonoBehaviour
 
     [Header("Prefabs")]
     [SerializeField] private GameObject bulletPrefab;
+    
+    [Header("Materials")]
+    [SerializeField] private Material teamBlueMaterial;
+    [SerializeField] private Material teamNeutralMaterial;
+    [SerializeField] private Material teamRedMaterial;
 
     private Renderer _myRenderer;
     private Material _myMaterial;
@@ -64,6 +69,12 @@ public class TurretScript : MonoBehaviour
         if (!firstTime) TurretManager.Instance.ChangeTurretTeam(this._myTeam);
         this._health = this.baseHealth;
         this._myTeam = team;
-        this._myMaterial = MaterialManager.Instance.GetMaterialByTeam(team);
+        
+        this._myMaterial = team switch
+        {
+            Team.Blue => this.teamBlueMaterial,
+            Team.Red => this.teamRedMaterial,
+            _ => this.teamNeutralMaterial
+        };
     }
 }

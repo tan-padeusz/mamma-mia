@@ -11,6 +11,11 @@ public class PlayerScript : MonoBehaviour
     [Header("Bullet")]
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private float bulletInterval = 0.2F;
+    
+    [Header("Materials")]
+    [SerializeField] private Material teamBlueMaterial;
+    [SerializeField] private Material teamNeutralMaterial;
+    [SerializeField] private Material teamRedMaterial;
         
     private Transform _cameraTransform;
     private bool _canShoot = true;
@@ -89,7 +94,13 @@ public class PlayerScript : MonoBehaviour
     public void ResetPlayer(Team team, Transform cameraTransform)
     {
         this._myTeam = team;
-        this._myMaterial = MaterialManager.Instance.GetMaterialByTeam(team);
+
+        this._myMaterial = team switch
+        {
+            Team.Blue => this.teamBlueMaterial,
+            Team.Red => this.teamRedMaterial,
+            _ => this.teamNeutralMaterial
+        };
 
         this._playerAction = team switch
         {
