@@ -5,6 +5,7 @@ public class BulletScript : MonoBehaviour
     [Header("Bullet")]
     [SerializeField] private float destroyAfterSeconds = 4F;
     [SerializeField] private float speed = 15F;
+    [SerializeField] private int damage = 1;
     
     [Header("Materials")]
     [SerializeField] private Material teamBlueMaterial;
@@ -48,8 +49,8 @@ public class BulletScript : MonoBehaviour
                 if (turretScript == null) return;
                 var turretMaterial = turretScript.GetTurretMaterial();
                 if (turretMaterial.name == this._myMaterial.name) return;
-                var remainingHealth = turretScript.DecreaseHealth();
-                if (remainingHealth == 0) turretScript.ResetTurret(this._myTeam, false);
+                var remainingHealth = turretScript.DecreaseHealth(this.damage);
+                if (remainingHealth <= 0) turretScript.ResetTurret(this._myTeam, false);
             }
         }
         this.SelfDestruct();

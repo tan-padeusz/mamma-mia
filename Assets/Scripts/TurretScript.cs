@@ -59,9 +59,10 @@ public class TurretScript : MonoBehaviour
         this._canShoot = true;
     }
 
-    public int DecreaseHealth()
+    public int DecreaseHealth(int value)
     {
-        return --this._health;
+        this._health -= value;
+        return this._health;
     }
 
     public void ResetTurret(Team team, bool firstTime)

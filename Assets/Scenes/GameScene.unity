@@ -520,10 +520,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerBlueCamera: {fileID: 586360323}
   playerRedCamera: {fileID: 111758048}
-  gridLevel: 0
-  nodeDistance: 7.5
-  obstacles: 5
-  teamSize: 3
+  gridLevel: 2
+  nodeDistance: 6.5
+  obstacles: 9
+  teamSize: 4
   obstacleColumnPrefab: {fileID: 4697184305417140046, guid: 376e3f7d98981ee428c73bc5ce47469e, type: 3}
   obstacleRowPrefab: {fileID: 4697184305417140046, guid: b29848c6e17345b43b4e638b7c9ba0e8, type: 3}
   playerPrefab: {fileID: 598931724242233961, guid: bffe5195298770f459447569f660d12d, type: 3}
