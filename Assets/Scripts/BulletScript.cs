@@ -40,7 +40,6 @@ public class BulletScript : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         var colliderTag = collision.gameObject.tag;
-        Debug.Log("bullet collided with :" + colliderTag);
         if (collision.collider.CompareTag("Turret"))
         {
             if (!this._myMaterial.name.Contains("Neutral"))
@@ -50,7 +49,11 @@ public class BulletScript : MonoBehaviour
                 var turretMaterial = turretScript.GetTurretMaterial();
                 if (turretMaterial.name == this._myMaterial.name) return;
                 var remainingHealth = turretScript.DecreaseHealth(this.damage);
-                if (remainingHealth <= 0) turretScript.ResetTurret(this._myTeam, false);
+                if (remainingHealth <= 0)
+                {
+                    turretScript.ResetTurret(this._myTeam);
+                    GameManagerScript.Instance.AddTurretForTeam(this._myTeam);
+                }
             }
         }
         this.SelfDestruct();

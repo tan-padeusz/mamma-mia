@@ -1,10 +1,22 @@
 ﻿using System;
+using System.Collections;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class GridManager : MonoBehaviour
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+
+public class GameManagerScript : MonoBehaviour
 {
+        [Header("UI")]
+        [SerializeField] private TextMeshProUGUI turretBlueCounter;
+        [SerializeField] private TextMeshProUGUI turretRedCounter;
+        [SerializeField] private TextMeshProUGUI gameOverText;
+        [SerializeField] private Image backToMenuButtonImage;
+        [SerializeField] private TextMeshProUGUI backToMenuButtonText;
+        
         [Header("Cameras")]
         [SerializeField] private Camera playerBlueCamera;
         [SerializeField] private Camera playerRedCamera;
@@ -27,12 +39,19 @@ public class GridManager : MonoBehaviour
         [SerializeField] private GameObject playerPrefab;
         [SerializeField] private GameObject turretPrefab;
 
+        private int _blueTurretCount = -1;
+        private int _redTurretCount = -1;
+        
+        public static GameManagerScript Instance { get; private set; }
+
         private void Start()
         {
                 this.gridLevel = Math.Max(this.gridLevel, 1);
                 this._gridSize = 2 * this.gridLevel + 1;
                 while (2 * this.teamSize > this._gridSize * this._gridSize - 2)
                         this.teamSize--;
+                this._blueTurretCount = this.teamSize;
+                this._redTurretCount = this.teamSize;
                 
                 this._grid = new bool[this._gridSize, this._gridSize];
                 this._grid[0, 0] = true;
@@ -45,18 +64,44 @@ public class GridManager : MonoBehaviour
                 
                 this.SpawnPlayers();
                 this.SpawnTurrets();
-                
-                for (var index = 0; index < this.obstacles; index++)
+                this.SpawnObstacles();
+
+                this.turretBlueCounter.text = "blue turrets : " + this._blueTurretCount;
+                this.turretRedCounter.text = "red turrets : " + this._redTurretCount;
+
+                GameManagerScript.Instance = this;
+        }
+
+        private void Update()
+        {
+                this.turretBlueCounter.text = "blue turrets : " + this._blueTurretCount;
+                this.turretRedCounter.text = "red turrets : " + this._redTurretCount;
+
+                if (this._blueTurretCount > 0 && this._redTurretCount > 0) return;
+                Time.timeScale = 0;
+                this.gameOverText.enabled = true;
+                this.backToMenuButtonImage.enabled = true;
+                this.backToMenuButtonText.enabled = true;
+                Cursor.lockState = CursorLockMode.None;
+        }
+
+        public void BackToMenu()
+        {
+                SceneManager.LoadScene("Scenes/MenuScene");
+        }
+
+        public void AddTurretForTeam(Team team)
+        {
+                if (team == Team.Blue)
                 {
-                        var random = Random.Range(0, 2);
-                        if (random == 0)
-                        {
-                                if (!this.SpawnColumnObstacle()) this.SpawnRowObstacle();
-                        }
-                        else
-                        {
-                                if (!this.SpawnRowObstacle()) this.SpawnColumnObstacle();
-                        }
+                        this._blueTurretCount++;
+                        this._redTurretCount--;
+                }
+
+                if (team == Team.Red)
+                {
+                        this._blueTurretCount--;
+                        this._redTurretCount++;
                 }
         }
 
@@ -87,6 +132,22 @@ public class GridManager : MonoBehaviour
                 
                 playerBlue.transform.LookAt(new Vector3(0, 0.5F, 0));
                 playerRed.transform.LookAt(new Vector3(0, 0.5F, 0));
+        }
+
+        private void SpawnObstacles()
+        {
+                for (var index = 0; index < this.obstacles; index++)
+                {
+                        var random = Random.Range(0, 2);
+                        if (random == 0)
+                        {
+                                if (!this.SpawnColumnObstacle()) this.SpawnRowObstacle();
+                        }
+                        else
+                        {
+                                if (!this.SpawnRowObstacle()) this.SpawnColumnObstacle();
+                        }
+                }
         }
         
         private bool SpawnColumnObstacle()
@@ -136,7 +197,6 @@ public class GridManager : MonoBehaviour
 
         private void SpawnTurrets()
         {
-                // TurretManager.Instance.SetTurretCount(this.teamSize);
                 for (var index = 0; index < this.teamSize * 2; index++)
                 {
                         int row, column;
@@ -155,7 +215,7 @@ public class GridManager : MonoBehaviour
                         var turretScript = turret.GetComponent<TurretScript>();
                         if (turretScript == null) return;
                         var team = index % 2 == 0 ? Team.Blue : Team.Red;
-                        turretScript.ResetTurret(team, true);
+                        turretScript.ResetTurret(team);
                 }
         }
 }

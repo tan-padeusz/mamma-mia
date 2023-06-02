@@ -65,9 +65,8 @@ public class TurretScript : MonoBehaviour
         return this._health;
     }
 
-    public void ResetTurret(Team team, bool firstTime)
+    public void ResetTurret(Team team)
     {
-        if (!firstTime) TurretManager.Instance.ChangeTurretTeam(this._myTeam);
         this._health = this.baseHealth;
         this._myTeam = team;
         
