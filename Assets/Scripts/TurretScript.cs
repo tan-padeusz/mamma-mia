@@ -5,16 +5,16 @@ using Random = UnityEngine.Random;
 public class TurretScript : MonoBehaviour
 {
     [Header("Bullet")]
+    [SerializeField] private GameObject bulletPrefab;
+    [SerializeField] private int bulletDamage = 1;
     [SerializeField] private float bulletInterval = 0.95F;
+    [SerializeField] private float bulletSpeed = 15F;
     private bool _canShoot = true;
     
     [Header("Turret")]
     [SerializeField] private int baseHealth = 4;
     private int _health;
     [SerializeField] private float maxRotation = 30F;
-
-    [Header("Prefabs")]
-    [SerializeField] private GameObject bulletPrefab;
     
     [Header("Materials")]
     [SerializeField] private Material teamBlueMaterial;
@@ -25,9 +25,9 @@ public class TurretScript : MonoBehaviour
     private Material _myMaterial;
     private Team _myTeam;
     
-    public Material GetTurretMaterial()
+    public Team GetTurretTeam()
     {
-        return this._myRenderer.material;
+        return this._myTeam;
     }
 
     private void Start()
@@ -53,7 +53,7 @@ public class TurretScript : MonoBehaviour
         
         var bullet = Instantiate(this.bulletPrefab, bulletPosition, myTransform.rotation);
         var bulletScript = bullet.GetComponent<BulletScript>();
-        if (bulletScript != null) bulletScript.ResetBullet(this._myTeam);
+        if (bulletScript != null) bulletScript.ResetBullet(this._myTeam, this.bulletDamage, this.bulletSpeed);
         
         yield return new WaitForSeconds(this.bulletInterval);
         this._canShoot = true;

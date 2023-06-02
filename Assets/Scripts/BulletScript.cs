@@ -2,19 +2,19 @@
 
 public class BulletScript : MonoBehaviour
 {
-    [Header("Bullet")]
-    [SerializeField] private float destroyAfterSeconds = 4F;
-    [SerializeField] private float speed = 15F;
-    [SerializeField] private int damage = 1;
-    
     [Header("Materials")]
     [SerializeField] private Material teamBlueMaterial;
     [SerializeField] private Material teamNeutralMaterial;
     [SerializeField] private Material teamRedMaterial;
-
-    private Material _myMaterial;
-    private Team _myTeam = Team.Neutral;
+    
+    private int _damage = 1;
+    private float _speed = 15F;
+    
+    private const float Lifespan = 3F;
     private float _startTime;
+    
+    private Team _myTeam = Team.Neutral;
+    private Material _myMaterial;
     private Renderer _myRenderer;
 
     private void SelfDestruct()
@@ -32,36 +32,30 @@ public class BulletScript : MonoBehaviour
     private void Update()
     {
         this._myRenderer.material = this._myMaterial;
-        if (Time.time - this._startTime > this.destroyAfterSeconds) this.SelfDestruct();
+        if (Time.time - this._startTime > BulletScript.Lifespan) this.SelfDestruct();
         var selfTransform = this.transform;
-        selfTransform.position += selfTransform.forward * (this.speed * Time.deltaTime);
+        selfTransform.position += selfTransform.forward * (this._speed * Time.deltaTime);
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        var colliderTag = collision.gameObject.tag;
         if (collision.collider.CompareTag("Turret"))
         {
-            if (!this._myMaterial.name.Contains("Neutral"))
-            {
-                var turretScript = collision.gameObject.GetComponent<TurretScript>();
-                if (turretScript == null) return;
-                var turretMaterial = turretScript.GetTurretMaterial();
-                if (turretMaterial.name == this._myMaterial.name) return;
-                var remainingHealth = turretScript.DecreaseHealth(this.damage);
-                if (remainingHealth <= 0)
-                {
-                    turretScript.ResetTurret(this._myTeam);
-                    GameManagerScript.Instance.AddTurretForTeam(this._myTeam);
-                }
-            }
+            var turretScript = collision.gameObject.GetComponent<TurretScript>();
+            if (turretScript == null) return;
+            if (turretScript.GetTurretTeam() == this._myTeam) return;
+            if (turretScript.DecreaseHealth(this._damage) > 0) return;
+            turretScript.ResetTurret(this._myTeam);
+            GameManagerScript.Instance.AddTurretForTeam(this._myTeam);
         }
         this.SelfDestruct();
     }
 
-    public void ResetBullet(Team team)
+    public void ResetBullet(Team team, int damage, float speed)
     {
         this._myTeam = team;
+        this._damage = damage;
+        this._speed = speed;
         this._myMaterial = team switch
         {
             Team.Blue => this.teamBlueMaterial,

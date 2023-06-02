@@ -4,13 +4,17 @@ using UnityEngine;
 
 public class PlayerScript : MonoBehaviour
 {
+    [Header("Bullet")]
+    [SerializeField] private GameObject bulletPrefab;
+    [SerializeField] private int bulletDamage = 1;
+    [SerializeField] private float bulletInterval = 0.2F;
+    [SerializeField] private float bulletSpeed = 15F;
+    private bool _canShoot = true;
+    
     [Header("Player")]
     [SerializeField] private float movementSpeed = 5F;
     [SerializeField] private float rotationSpeed = 100F;
 
-    [Header("Bullet")]
-    [SerializeField] private GameObject bulletPrefab;
-    [SerializeField] private float bulletInterval = 0.2F;
     
     [Header("Materials")]
     [SerializeField] private Material teamBlueMaterial;
@@ -18,7 +22,7 @@ public class PlayerScript : MonoBehaviour
     [SerializeField] private Material teamRedMaterial;
         
     private Transform _cameraTransform;
-    private bool _canShoot = true;
+    
     
     private Team _myTeam;
     private Material _myMaterial;
@@ -86,7 +90,7 @@ public class PlayerScript : MonoBehaviour
         var bulletPosition = this._myTransform.position + this._myTransform.forward;
         var bullet = Instantiate(this.bulletPrefab, bulletPosition, this._myTransform.rotation);
         var bulletScript = bullet.GetComponent<BulletScript>();
-        if (bullet != null) bulletScript.ResetBullet(this._myTeam);
+        if (bullet != null) bulletScript.ResetBullet(this._myTeam, this.bulletDamage, this.bulletSpeed);
         yield return new WaitForSeconds(this.bulletInterval);
         this._canShoot = true;
     }

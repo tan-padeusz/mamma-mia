@@ -14,8 +14,9 @@ public class GameManagerScript : MonoBehaviour
         [SerializeField] private TextMeshProUGUI turretBlueCounter;
         [SerializeField] private TextMeshProUGUI turretRedCounter;
         [SerializeField] private TextMeshProUGUI gameOverText;
-        [SerializeField] private Image backToMenuButtonImage;
-        [SerializeField] private TextMeshProUGUI backToMenuButtonText;
+        [SerializeField] private GameObject backToMenuPanel;
+        // [SerializeField] private Image backToMenuButtonImage;
+        // [SerializeField] private TextMeshProUGUI backToMenuButtonText;
         
         [Header("Cameras")]
         [SerializeField] private Camera playerBlueCamera;
@@ -80,8 +81,9 @@ public class GameManagerScript : MonoBehaviour
                 if (this._blueTurretCount > 0 && this._redTurretCount > 0) return;
                 Time.timeScale = 0;
                 this.gameOverText.enabled = true;
-                this.backToMenuButtonImage.enabled = true;
-                this.backToMenuButtonText.enabled = true;
+                // this.backToMenuButtonImage.enabled = true;
+                // this.backToMenuButtonText.enabled = true;
+                this.backToMenuPanel.SetActive(true);
                 Cursor.lockState = CursorLockMode.None;
         }
 
@@ -92,16 +94,20 @@ public class GameManagerScript : MonoBehaviour
 
         public void AddTurretForTeam(Team team)
         {
-                if (team == Team.Blue)
+                switch (team)
                 {
-                        this._blueTurretCount++;
-                        this._redTurretCount--;
-                }
-
-                if (team == Team.Red)
-                {
-                        this._blueTurretCount--;
-                        this._redTurretCount++;
+                        case Team.Blue:
+                                this._blueTurretCount++;
+                                this._redTurretCount--;
+                                break;
+                        case Team.Neutral:
+                                break;
+                        case Team.Red:
+                                this._blueTurretCount--;
+                                this._redTurretCount++;
+                                break;
+                        default:
+                                throw new ArgumentOutOfRangeException(nameof(team), team, null);
                 }
         }
 
