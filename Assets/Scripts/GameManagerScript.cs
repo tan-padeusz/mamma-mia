@@ -14,6 +14,7 @@ public class GameManagerScript : MonoBehaviour
         [SerializeField] private TextMeshProUGUI gameOverText;
         [SerializeField] private GameObject backToMenuPanel;
         [SerializeField] private TextMeshProUGUI timeCounter;
+        [SerializeField] private GameObject gameCanvas;
         
         [Header("Cameras")]
         [SerializeField] private Camera playerBlueCamera;
@@ -41,8 +42,8 @@ public class GameManagerScript : MonoBehaviour
         [SerializeField] private GameObject playerPrefab;
         [SerializeField] private GameObject turretPrefab;
 
-        private int _blueTurretCount = 0;
-        private int _redTurretCount = 0;
+        private int _blueTurretCount;
+        private int _redTurretCount;
         
         public static GameManagerScript Instance { get; private set; }
 
@@ -59,6 +60,7 @@ public class GameManagerScript : MonoBehaviour
 
         private void Start()
         {
+                this.gameCanvas.SetActive(true);
                 Time.timeScale = 1;
                 
                 this.gridLevel = Math.Max(this.gridLevel, 1);
@@ -107,6 +109,7 @@ public class GameManagerScript : MonoBehaviour
         public void BackToMenu()
         {
                 SceneManager.LoadScene("Scenes/MenuScene");
+                this.gameCanvas.SetActive(false);
         }
 
         public void AddTurretForTeam(Team oldTeam, Team newTeam)
@@ -131,13 +134,13 @@ public class GameManagerScript : MonoBehaviour
         private void SpawnPlayers()
         {
                 var center = this._gridSize / 2;
-
-                var playerBlueRow = 0;
-                var playerBlueColumn = 0;
+                
+                // var playerBlueRow = 0;
+                // var playerBlueColumn = 0;
                 var playerRedRow = this._gridSize - 1;
                 var playerRedColumn = this._gridSize - 1;
 
-                var playerBlueXPosition = (playerBlueColumn - center) * this.nodeDistance;
+                var playerBlueXPosition = -center * this.nodeDistance;
                 var playerBlueZPosition = center * this.nodeDistance;
                 var playerRedXPosition = (playerRedColumn - center) * this.nodeDistance;
                 var playerRedZPosition = (center - playerRedRow) * this.nodeDistance;
@@ -145,16 +148,19 @@ public class GameManagerScript : MonoBehaviour
                 var playerBluePosition = new Vector3(playerBlueXPosition, 0.5F, playerBlueZPosition);
                 var playerRedPosition = new Vector3(playerRedXPosition, 0.5F, playerRedZPosition);
 
+                var centerPoint = new Vector3(0, 0.5F, 0);
+                
                 var playerBlue = Instantiate(this.playerPrefab, playerBluePosition, new Quaternion());
+                playerBlue.transform.LookAt(centerPoint);
+                this.playerBlueCamera.transform.LookAt(centerPoint);
                 var playerBlueScript = playerBlue.GetComponent<PlayerScript>();
                 if (playerBlueScript != null) playerBlueScript.ResetPlayer(Team.Blue, this.playerBlueCamera.transform);
 
                 var playerRed = Instantiate(this.playerPrefab, playerRedPosition, new Quaternion());
+                playerRed.transform.LookAt(centerPoint);
+                this.playerRedCamera.transform.LookAt(centerPoint);
                 var playerRedScript = playerRed.GetComponent<PlayerScript>();
                 if (playerRedScript != null) playerRedScript.ResetPlayer(Team.Red, this.playerRedCamera.transform);
-                
-                playerBlue.transform.LookAt(new Vector3(0, 0.5F, 0));
-                playerRed.transform.LookAt(new Vector3(0, 0.5F, 0));
         }
 
         private void SpawnObstacles()

@@ -3020,6 +3020,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2457265de67fd1e45bc2ab65d478467f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  controlsCanvas: {fileID: 2119652415}
 --- !u!4 &1819099889
 Transform:
   m_ObjectHideFlags: 0

@@ -14,11 +14,8 @@ public class PlayerScript : MonoBehaviour
     [Header("Player")]
     [SerializeField] private float movementSpeed = 5F;
     [SerializeField] private float rotationSpeed = 100F;
-    
-    [Header("Slow")]
-    [SerializeField] private float slowDownTime = 0.6F;
+    [SerializeField] private float bdTime = 0.6F;
 
-    
     [Header("Materials")]
     [SerializeField] private Material teamBlueMaterial;
     [SerializeField] private Material teamNeutralMaterial;
@@ -26,33 +23,14 @@ public class PlayerScript : MonoBehaviour
         
     private Transform _cameraTransform;
     
-    
     private Team _myTeam;
     private Material _myMaterial;
     private Renderer _myRenderer;
     private Transform _myTransform;
 
     private Action _playerAction;
-    private bool _isSlowed;
-
-    public void SlowDown(Team team)
-    {
-        if (this._isSlowed) return;
-        this.StartCoroutine(this.SlowDownCoroutineAction(team));
-    }
-
-    private IEnumerator SlowDownCoroutineAction(Team team)
-    {
-        this._isSlowed = true;
-        var currentSpeed = this.movementSpeed;
-        var turretCount = GameManagerScript.Instance.GetTurretsForTeam(this._myTeam);
-        if (team == this._myTeam) this.movementSpeed *= turretCount;
-        else this.movementSpeed /= turretCount;
-        yield return new WaitForSeconds(this.slowDownTime);
-        this.movementSpeed = currentSpeed;
-        this._isSlowed = false;
-    }
-
+    private bool _isSpeedModified;
+    
     private void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
@@ -64,8 +42,6 @@ public class PlayerScript : MonoBehaviour
     {
         this._myRenderer.material = this._myMaterial;
         if (this._cameraTransform != null) this._playerAction?.Invoke();
-
-        
     }
 
     private void PlayerBlueAction()
@@ -112,7 +88,7 @@ public class PlayerScript : MonoBehaviour
         var bulletPosition = this._myTransform.position + this._myTransform.forward;
         var bullet = Instantiate(this.bulletPrefab, bulletPosition, this._myTransform.rotation);
         var bulletScript = bullet.GetComponent<BulletScript>();
-        if (bullet != null) bulletScript.ResetBullet(this._myTeam, this.bulletDamage, this.bulletSpeed);
+        if (bulletScript != null) bulletScript.ResetBullet(this._myTeam, this.bulletDamage, this.bulletSpeed);
         yield return new WaitForSeconds(this.bulletInterval);
         this._canShoot = true;
     }
@@ -136,5 +112,39 @@ public class PlayerScript : MonoBehaviour
         };
         
         this._cameraTransform = cameraTransform;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (!collision.collider.CompareTag("Bullet")) return;
+        var bulletScript = collision.gameObject.GetComponent<BulletScript>();
+        if (bulletScript == null || bulletScript.GetBulletTeam() == Team.Neutral) return;
+        this.ModifySpeed(bulletScript.GetBulletTeam());
+    }
+
+    private void ModifySpeed(Team team)
+    {
+        if (this._isSpeedModified) return;
+        var turretCount = (double) GameManagerScript.Instance.GetTurretsForTeam(this._myTeam);
+        this._isSpeedModified = true;
+        this.StartCoroutine(team == this._myTeam ? this.SpeedUp(turretCount) : this.SlowDown(turretCount));
+    }
+
+    private IEnumerator SpeedUp(double turretCount)
+    {
+        var currentSpeed = this.movementSpeed;
+        this.movementSpeed *= (float) Math.Sqrt(turretCount);
+        yield return new WaitForSeconds(this.bdTime);
+        this.movementSpeed = currentSpeed;
+        this._isSpeedModified = false;
+    }
+
+    private IEnumerator SlowDown(double turretCount)
+    {
+        var currentSpeed = this.movementSpeed;
+        this.movementSpeed /= (float) Math.Sqrt(turretCount);
+        yield return new WaitForSeconds(this.bdTime);
+        this.movementSpeed = currentSpeed;
+        this._isSpeedModified = false;
     }
 }

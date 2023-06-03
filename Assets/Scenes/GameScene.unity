@@ -1262,6 +1262,7 @@ MonoBehaviour:
   gameOverText: {fileID: 1241548593}
   backToMenuPanel: {fileID: 741211811}
   timeCounter: {fileID: 1526368668}
+  gameCanvas: {fileID: 898848936}
   playerBlueCamera: {fileID: 586360323}
   playerRedCamera: {fileID: 111758048}
   gridLevel: 2

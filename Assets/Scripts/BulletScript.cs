@@ -22,6 +22,11 @@ public class BulletScript : MonoBehaviour
         Destroy(this.gameObject);
         Destroy(this);
     }
+
+    public Team GetBulletTeam()
+    {
+        return this._myTeam;
+    }
     
     private void Start()
     {
@@ -48,13 +53,6 @@ public class BulletScript : MonoBehaviour
             if (turretScript.DecreaseHealth(this._damage) > 0) return;
             turretScript.ResetTurret(this._myTeam);
             GameManagerScript.Instance.AddTurretForTeam(turretTeam, this._myTeam);
-        }
-
-        if (collision.collider.CompareTag("Player"))
-        {
-            var playerScript = collision.gameObject.GetComponent<PlayerScript>();
-            if (playerScript == null) return;
-            playerScript.SlowDown(this._myTeam);
         }
         this.SelfDestruct();
     }
