@@ -30,7 +30,7 @@ Transform:
   m_GameObject: {fileID: 4369358113381285050}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -9.231002, y: 0.05, z: -17.046625}
-  m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
+  m_LocalScale: {x: 0.15, y: 0.15, z: 0.15}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -111,11 +111,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1388703597f240c490f91e164e05889b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  destroyAfterSeconds: 2
-  speed: 15
   teamBlueMaterial: {fileID: 2100000, guid: 315ad2d159b7f7a45b737ce70099be02, type: 2}
-  teamRedMaterial: {fileID: 2100000, guid: 6191b28f967500e45ab5b09d4f610d61, type: 2}
   teamNeutralMaterial: {fileID: 2100000, guid: 15941976402173c478cf360883a5beaa, type: 2}
+  teamRedMaterial: {fileID: 2100000, guid: 6191b28f967500e45ab5b09d4f610d61, type: 2}
 --- !u!54 &-4698930290349704041
 Rigidbody:
   m_ObjectHideFlags: 0

@@ -10,6 +10,16 @@ public class MenuManagerScript : MonoBehaviour
       SceneManager.LoadScene("Scenes/GameScene");
    }
 
+   public void ShowGoals()
+   {
+      SceneManager.LoadScene("Scenes/GoalsScene");
+   }
+
+   public void ShowControls()
+   {
+      SceneManager.LoadScene("Scenes/ControlsScene");
+   }
+
    public void QuitGame()
    {
       Application.Quit();

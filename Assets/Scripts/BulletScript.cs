@@ -43,10 +43,18 @@ public class BulletScript : MonoBehaviour
         {
             var turretScript = collision.gameObject.GetComponent<TurretScript>();
             if (turretScript == null) return;
-            if (turretScript.GetTurretTeam() == this._myTeam) return;
+            var turretTeam = turretScript.GetTurretTeam();
+            if (turretTeam == this._myTeam) return;
             if (turretScript.DecreaseHealth(this._damage) > 0) return;
             turretScript.ResetTurret(this._myTeam);
-            GameManagerScript.Instance.AddTurretForTeam(this._myTeam);
+            GameManagerScript.Instance.AddTurretForTeam(turretTeam, this._myTeam);
+        }
+
+        if (collision.collider.CompareTag("Player"))
+        {
+            var playerScript = collision.gameObject.GetComponent<PlayerScript>();
+            if (playerScript == null) return;
+            playerScript.SlowDown(this._myTeam);
         }
         this.SelfDestruct();
     }

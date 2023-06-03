@@ -14,6 +14,9 @@ public class PlayerScript : MonoBehaviour
     [Header("Player")]
     [SerializeField] private float movementSpeed = 5F;
     [SerializeField] private float rotationSpeed = 100F;
+    
+    [Header("Slow")]
+    [SerializeField] private float slowDownTime = 0.6F;
 
     
     [Header("Materials")]
@@ -30,6 +33,25 @@ public class PlayerScript : MonoBehaviour
     private Transform _myTransform;
 
     private Action _playerAction;
+    private bool _isSlowed;
+
+    public void SlowDown(Team team)
+    {
+        if (this._isSlowed) return;
+        this.StartCoroutine(this.SlowDownCoroutineAction(team));
+    }
+
+    private IEnumerator SlowDownCoroutineAction(Team team)
+    {
+        this._isSlowed = true;
+        var currentSpeed = this.movementSpeed;
+        var turretCount = GameManagerScript.Instance.GetTurretsForTeam(this._myTeam);
+        if (team == this._myTeam) this.movementSpeed *= turretCount;
+        else this.movementSpeed /= turretCount;
+        yield return new WaitForSeconds(this.slowDownTime);
+        this.movementSpeed = currentSpeed;
+        this._isSlowed = false;
+    }
 
     private void Start()
     {

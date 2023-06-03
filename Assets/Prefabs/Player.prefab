@@ -127,10 +127,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 515f21e9c4fa7c342838b7466c9e1f18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bulletPrefab: {fileID: 4369358113381285050, guid: 5df402aba81c77a47a8f0896b2d144f4, type: 3}
+  bulletDamage: 1
+  bulletInterval: 0.2
+  bulletSpeed: 15
   movementSpeed: 5
   rotationSpeed: 100
-  bulletPrefab: {fileID: 4369358113381285050, guid: 5df402aba81c77a47a8f0896b2d144f4, type: 3}
-  bulletInterval: 0.2
+  slowDownTime: 0.6
   teamBlueMaterial: {fileID: 2100000, guid: 315ad2d159b7f7a45b737ce70099be02, type: 2}
   teamNeutralMaterial: {fileID: 2100000, guid: 15941976402173c478cf360883a5beaa, type: 2}
   teamRedMaterial: {fileID: 2100000, guid: 6191b28f967500e45ab5b09d4f610d61, type: 2}

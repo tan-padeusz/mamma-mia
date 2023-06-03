@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Linq;
 using TMPro;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 public class GameManagerScript : MonoBehaviour
 {
@@ -15,8 +13,7 @@ public class GameManagerScript : MonoBehaviour
         [SerializeField] private TextMeshProUGUI turretRedCounter;
         [SerializeField] private TextMeshProUGUI gameOverText;
         [SerializeField] private GameObject backToMenuPanel;
-        // [SerializeField] private Image backToMenuButtonImage;
-        // [SerializeField] private TextMeshProUGUI backToMenuButtonText;
+        [SerializeField] private TextMeshProUGUI timeCounter;
         
         [Header("Cameras")]
         [SerializeField] private Camera playerBlueCamera;
@@ -29,6 +26,10 @@ public class GameManagerScript : MonoBehaviour
         [SerializeField] private int obstacles = 4;
         [SerializeField] private int teamSize = 3;
         private int _maxObstacles;
+
+        [Header("Game")]
+        [SerializeField] private float time = 60;
+        private float _startTime;
         
         private bool[,] _grid;
         private bool[,] _obstacleColumnGrid;
@@ -40,19 +41,30 @@ public class GameManagerScript : MonoBehaviour
         [SerializeField] private GameObject playerPrefab;
         [SerializeField] private GameObject turretPrefab;
 
-        private int _blueTurretCount = -1;
-        private int _redTurretCount = -1;
+        private int _blueTurretCount = 0;
+        private int _redTurretCount = 0;
         
         public static GameManagerScript Instance { get; private set; }
 
+        public int GetTurretsForTeam(Team team)
+        {
+                var turretCount = team switch
+                {
+                        Team.Blue => this._blueTurretCount,
+                        Team.Red => this._redTurretCount,
+                        _ => 0
+                };
+                return Math.Max(turretCount, 1);
+        }
+
         private void Start()
         {
+                Time.timeScale = 1;
+                
                 this.gridLevel = Math.Max(this.gridLevel, 1);
                 this._gridSize = 2 * this.gridLevel + 1;
                 while (2 * this.teamSize > this._gridSize * this._gridSize - 2)
                         this.teamSize--;
-                this._blueTurretCount = this.teamSize;
-                this._redTurretCount = this.teamSize;
                 
                 this._grid = new bool[this._gridSize, this._gridSize];
                 this._grid[0, 0] = true;
@@ -71,20 +83,25 @@ public class GameManagerScript : MonoBehaviour
                 this.turretRedCounter.text = "red turrets : " + this._redTurretCount;
 
                 GameManagerScript.Instance = this;
+
+                this._startTime = Time.time;
         }
 
         private void Update()
         {
                 this.turretBlueCounter.text = "blue turrets : " + this._blueTurretCount;
                 this.turretRedCounter.text = "red turrets : " + this._redTurretCount;
+                this.timeCounter.text = $"remaining time : {Math.Ceiling(this.time - (Time.time - this._startTime))}";
 
-                if (this._blueTurretCount > 0 && this._redTurretCount > 0) return;
+                if (this._blueTurretCount < 2 * this.teamSize && this._redTurretCount < 2 * this.teamSize &&
+                    !(Time.time - this._startTime >= this.time)) return;
                 Time.timeScale = 0;
-                this.gameOverText.enabled = true;
-                // this.backToMenuButtonImage.enabled = true;
-                // this.backToMenuButtonText.enabled = true;
+                if (this._blueTurretCount > this._redTurretCount) this.gameOverText.text = "player blue won";
+                else if (this._redTurretCount > this._blueTurretCount) this.gameOverText.text = "player red won";
+                else this.gameOverText.text = "game over : tie";
                 this.backToMenuPanel.SetActive(true);
                 Cursor.lockState = CursorLockMode.None;
+
         }
 
         public void BackToMenu()
@@ -92,22 +109,22 @@ public class GameManagerScript : MonoBehaviour
                 SceneManager.LoadScene("Scenes/MenuScene");
         }
 
-        public void AddTurretForTeam(Team team)
+        public void AddTurretForTeam(Team oldTeam, Team newTeam)
         {
-                switch (team)
+                switch (newTeam)
                 {
                         case Team.Blue:
                                 this._blueTurretCount++;
-                                this._redTurretCount--;
+                                if (oldTeam == Team.Red) this._redTurretCount--;
                                 break;
                         case Team.Neutral:
                                 break;
                         case Team.Red:
-                                this._blueTurretCount--;
                                 this._redTurretCount++;
+                                if (oldTeam == Team.Blue) this._blueTurretCount--;
                                 break;
                         default:
-                                throw new ArgumentOutOfRangeException(nameof(team), team, null);
+                                throw new ArgumentOutOfRangeException(nameof(newTeam), newTeam, null);
                 }
         }
 
@@ -220,8 +237,8 @@ public class GameManagerScript : MonoBehaviour
                         var turret = Instantiate(this.turretPrefab, position, new Quaternion());
                         var turretScript = turret.GetComponent<TurretScript>();
                         if (turretScript == null) return;
-                        var team = index % 2 == 0 ? Team.Blue : Team.Red;
-                        turretScript.ResetTurret(team);
+                        // var team = index % 2 == 0 ? Team.Blue : Team.Red;
+                        turretScript.ResetTurret(Team.Neutral);
                 }
         }
 }
