@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerScript : MonoBehaviour
 {
@@ -53,11 +54,17 @@ public class PlayerScript : MonoBehaviour
         if (Input.GetKey(KeyCode.S)) this._myTransform.position -= this._myTransform.forward * (this.movementSpeed * deltaTime);
         if (Input.GetKey(KeyCode.A)) this._myTransform.position -= this._myTransform.right * (this.movementSpeed * deltaTime);
         if (Input.GetKey(KeyCode.D)) this._myTransform.position += this._myTransform.right * (this.movementSpeed * deltaTime);
-                
+
         if (Input.GetKey(KeyCode.Q)) this._cameraTransform.Rotate(Vector3.down * (this.rotationSpeed * deltaTime));
         if (Input.GetKey(KeyCode.E)) this._cameraTransform.Rotate(Vector3.up * (this.rotationSpeed * deltaTime));
 
         this._cameraTransform.position = this._myTransform.position;
+
+        if (Input.GetKey(KeyCode.Backspace))
+        {
+            Cursor.lockState = CursorLockMode.None;
+            SceneManager.LoadScene("Scenes/MenuScene");
+        }
                 
         if (!this._canShoot) return;
         if (Input.GetKey(KeyCode.Z)) this.StartCoroutine(this.ShootBullet());
@@ -73,13 +80,17 @@ public class PlayerScript : MonoBehaviour
         if (Input.GetKey(KeyCode.Keypad4)) this._myTransform.position -= this._myTransform.right * (this.movementSpeed * deltaTime);
         if (Input.GetKey(KeyCode.Keypad6)) this._myTransform.position += this._myTransform.right * (this.movementSpeed * deltaTime);
                 
-        if (Input.GetKey(KeyCode.Keypad7)) this._cameraTransform.Rotate(Vector3.down * (this.rotationSpeed * deltaTime));
-        if (Input.GetKey(KeyCode.Keypad9)) this._cameraTransform.Rotate(Vector3.up * (this.rotationSpeed * deltaTime));
+        // if (Input.GetKey(KeyCode.Keypad7)) this._cameraTransform.Rotate(Vector3.down * (this.rotationSpeed * deltaTime));
+        // if (Input.GetKey(KeyCode.Keypad9)) this._cameraTransform.Rotate(Vector3.up * (this.rotationSpeed * deltaTime));
+
+        var mouseX = Input.GetAxis("Mouse X");
+        this._cameraTransform.Rotate(Vector3.up * (mouseX * this.rotationSpeed * deltaTime));
 
         this._cameraTransform.position = this._myTransform.position;
                 
         if (!this._canShoot) return;
-        if (Input.GetKey(KeyCode.Keypad2)) this.StartCoroutine(this.ShootBullet());
+        if (Input.GetMouseButton(0)) this.StartCoroutine(this.ShootBullet());
+        // if (Input.GetKey(KeyCode.Keypad2)) this.StartCoroutine(this.ShootBullet());
     }
 
     private IEnumerator ShootBullet()

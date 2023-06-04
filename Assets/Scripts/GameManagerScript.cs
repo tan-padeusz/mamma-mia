@@ -14,7 +14,6 @@ public class GameManagerScript : MonoBehaviour
         [SerializeField] private TextMeshProUGUI gameOverText;
         [SerializeField] private GameObject backToMenuPanel;
         [SerializeField] private TextMeshProUGUI timeCounter;
-        [SerializeField] private GameObject gameCanvas;
         
         [Header("Cameras")]
         [SerializeField] private Camera playerBlueCamera;
@@ -60,7 +59,7 @@ public class GameManagerScript : MonoBehaviour
 
         private void Start()
         {
-                this.gameCanvas.SetActive(true);
+                Cursor.lockState = CursorLockMode.Confined;
                 Time.timeScale = 1;
                 
                 this.gridLevel = Math.Max(this.gridLevel, 1);
@@ -108,8 +107,8 @@ public class GameManagerScript : MonoBehaviour
 
         public void BackToMenu()
         {
+                Cursor.lockState = CursorLockMode.None;
                 SceneManager.LoadScene("Scenes/MenuScene");
-                this.gameCanvas.SetActive(false);
         }
 
         public void AddTurretForTeam(Team oldTeam, Team newTeam)
