@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Audio;
 
 public class BulletScript : MonoBehaviour
 {
@@ -32,6 +33,7 @@ public class BulletScript : MonoBehaviour
     {
         this._myRenderer = this.GetComponent<Renderer>();
         this._startTime = Time.time;
+        this.GetComponent<AudioSource>().Play();
     }
 
     private void Update()
@@ -52,7 +54,7 @@ public class BulletScript : MonoBehaviour
             if (turretTeam == this._myTeam) return;
             if (turretScript.DecreaseHealth(this._damage) > 0) return;
             turretScript.ResetTurret(this._myTeam);
-            GameManagerScript.Instance.AddTurretForTeam(turretTeam, this._myTeam);
+            GameManagerScript.AddTurretForTeam(turretTeam, this._myTeam);
         }
         this.SelfDestruct();
     }

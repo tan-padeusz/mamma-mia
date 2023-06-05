@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 using UnityEngine.SceneManagement;
 
@@ -20,39 +19,36 @@ public class GameManagerScript : MonoBehaviour
         [SerializeField] private Camera playerBlueCamera;
         [SerializeField] private Camera playerRedCamera;
         
-        [Header("Grid")]
-        [SerializeField] private int gridLevel;
+        [Header("Game")]
+        [SerializeField] private float length = 60;
+        private float _startTime;
+        [SerializeField] private int size = 2;
         private int _gridSize;
         [SerializeField] private float nodeDistance = 3.5F;
-        [SerializeField] private int obstacles = 4;
         [SerializeField] private int teamSize = 3;
+        [SerializeField] private int obstacles = 4;
         private int _maxObstacles;
-
-        [Header("Game")]
-        [SerializeField] private float time = 60;
-        private float _startTime;
         
         private bool[,] _grid;
         private bool[,] _obstacleColumnGrid;
         private bool[,] _obstacleRowGrid;
         
         [Header("Prefabs")]
-        [SerializeField] private GameObject obstacleColumnPrefab;
-        [SerializeField] private GameObject obstacleRowPrefab;
+        [SerializeField] private GameObject obstaclePrefab;
         [SerializeField] private GameObject playerPrefab;
         [SerializeField] private List<GameObject> turretPrefabs;
 
         private int _blueTurretCount;
         private int _redTurretCount;
         
-        public static GameManagerScript Instance { get; private set; }
+        private static GameManagerScript Instance { get; set; }
 
-        public int GetTurretsForTeam(Team team)
+        public static int GetTurretsForTeam(Team team)
         {
                 var turretCount = team switch
                 {
-                        Team.Blue => this._blueTurretCount,
-                        Team.Red => this._redTurretCount,
+                        Team.Blue => GameManagerScript.Instance._blueTurretCount,
+                        Team.Red => GameManagerScript.Instance._redTurretCount,
                         _ => 0
                 };
                 return Math.Max(turretCount, 1);
@@ -63,8 +59,8 @@ public class GameManagerScript : MonoBehaviour
                 Cursor.lockState = CursorLockMode.Confined;
                 Time.timeScale = 1;
                 
-                this.gridLevel = Math.Max(this.gridLevel, 1);
-                this._gridSize = 2 * this.gridLevel + 1;
+                this.size = Math.Max(this.size, 1);
+                this._gridSize = 2 * this.size + 1;
                 while (2 * this.teamSize > this._gridSize * this._gridSize - 2)
                         this.teamSize--;
                 
@@ -93,10 +89,10 @@ public class GameManagerScript : MonoBehaviour
         {
                 this.turretBlueCounter.text = "blue turrets : " + this._blueTurretCount;
                 this.turretRedCounter.text = "red turrets : " + this._redTurretCount;
-                this.timeCounter.text = $"remaining time : {Math.Ceiling(this.time - (Time.time - this._startTime))}";
+                this.timeCounter.text = $"remaining time : {Math.Ceiling(this.length - (Time.time - this._startTime))}";
 
                 if (this._blueTurretCount < 2 * this.teamSize && this._redTurretCount < 2 * this.teamSize &&
-                    !(Time.time - this._startTime >= this.time)) return;
+                    !(Time.time - this._startTime >= this.length)) return;
                 Time.timeScale = 0;
                 if (this._blueTurretCount > this._redTurretCount) this.gameOverText.text = "player blue won";
                 else if (this._redTurretCount > this._blueTurretCount) this.gameOverText.text = "player red won";
@@ -112,19 +108,19 @@ public class GameManagerScript : MonoBehaviour
                 SceneManager.LoadScene("Scenes/MenuScene");
         }
 
-        public void AddTurretForTeam(Team oldTeam, Team newTeam)
+        public static void AddTurretForTeam(Team oldTeam, Team newTeam)
         {
                 switch (newTeam)
                 {
                         case Team.Blue:
-                                this._blueTurretCount++;
-                                if (oldTeam == Team.Red) this._redTurretCount--;
+                                GameManagerScript.Instance._blueTurretCount++;
+                                if (oldTeam == Team.Red) GameManagerScript.Instance._redTurretCount--;
                                 break;
                         case Team.Neutral:
                                 break;
                         case Team.Red:
-                                this._redTurretCount++;
-                                if (oldTeam == Team.Blue) this._blueTurretCount--;
+                                GameManagerScript.Instance._redTurretCount++;
+                                if (oldTeam == Team.Blue) GameManagerScript.Instance._blueTurretCount--;
                                 break;
                         default:
                                 throw new ArgumentOutOfRangeException(nameof(newTeam), newTeam, null);
@@ -161,7 +157,7 @@ public class GameManagerScript : MonoBehaviour
         {
                 for (var index = 0; index < this.obstacles; index++)
                 {
-                        var random = Random.Range(0, 2);
+                        var random = UnityEngine.Random.Range(0, 2);
                         if (random == 0)
                         {
                                 if (!this.SpawnColumnObstacle()) this.SpawnRowObstacle();
@@ -180,8 +176,8 @@ public class GameManagerScript : MonoBehaviour
                 int row, column;
                 do
                 {
-                        row = Random.Range(0, this._gridSize);
-                        column = Random.Range(0, this._gridSize - 1);
+                        row = UnityEngine.Random.Range(0, this._gridSize);
+                        column = UnityEngine.Random.Range(0, this._gridSize - 1);
                 } while (this._obstacleColumnGrid[row, column]);
                 this._obstacleColumnGrid[row, column] = true;
                 
@@ -189,7 +185,8 @@ public class GameManagerScript : MonoBehaviour
                 var xPosition = (column - center + 0.5F) * this.nodeDistance;
                 var zPosition = (center - row) * this.nodeDistance;
                 var obstaclePosition = new Vector3(xPosition, 1F, zPosition);
-                Instantiate(this.obstacleColumnPrefab, obstaclePosition, new Quaternion());
+                var obstacle = Instantiate(this.obstaclePrefab, obstaclePosition, new Quaternion());
+                obstacle.transform.localScale = new Vector3(1, 2, 2);
                 return true;
         }
 
@@ -200,8 +197,8 @@ public class GameManagerScript : MonoBehaviour
                 int row, column;
                 do
                 {
-                        row = Random.Range(0, this._gridSize - 1);
-                        column = Random.Range(0, this._gridSize);
+                        row = UnityEngine.Random.Range(0, this._gridSize - 1);
+                        column = UnityEngine.Random.Range(0, this._gridSize);
                 } while (this._obstacleRowGrid[row, column]);
                 this._obstacleRowGrid[row, column] = true;
                 
@@ -209,7 +206,8 @@ public class GameManagerScript : MonoBehaviour
                 var xPosition = (column - center) * this.nodeDistance;
                 var zPosition = (center - row - 0.5F) * this.nodeDistance;
                 var obstaclePosition = new Vector3(xPosition, 1F, zPosition);
-                Instantiate(this.obstacleRowPrefab, obstaclePosition, new Quaternion());
+                var obstacle = Instantiate(this.obstaclePrefab, obstaclePosition, new Quaternion());
+                obstacle.transform.localScale = new Vector3(2, 2, 1);
                 return true;
         }
 
@@ -225,8 +223,8 @@ public class GameManagerScript : MonoBehaviour
                         int row, column;
                         do
                         {
-                                row = Random.Range(0, this._gridSize);
-                                column = Random.Range(0, this._gridSize);
+                                row = UnityEngine.Random.Range(0, this._gridSize);
+                                column = UnityEngine.Random.Range(0, this._gridSize);
                         } while (this._grid[row, column]);
                         this._grid[row, column] = true;
 
@@ -234,7 +232,7 @@ public class GameManagerScript : MonoBehaviour
                         var xPosition = (column - center) * this.nodeDistance;
                         var zPosition = (center - row) * this.nodeDistance;
                         var position = new Vector3(xPosition, 0.5F, zPosition);
-                        var turretPrefab = this.turretPrefabs[Random.Range(0, this.turretPrefabs.Count)];
+                        var turretPrefab = this.turretPrefabs[UnityEngine.Random.Range(0, this.turretPrefabs.Count)];
                         Instantiate(turretPrefab, position, new Quaternion());
                 }
         }

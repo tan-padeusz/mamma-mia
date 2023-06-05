@@ -1159,7 +1159,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ea21fce918565444384fea1c4670ef43, type: 2}
+  - {fileID: 2100000, guid: 5d8af8f434f69794eabd684fb44b4fbf, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1264,13 +1264,12 @@ MonoBehaviour:
   timeCounter: {fileID: 1526368668}
   playerBlueCamera: {fileID: 586360323}
   playerRedCamera: {fileID: 111758048}
-  gridLevel: 2
+  length: 60
+  size: 2
   nodeDistance: 6.5
-  obstacles: 9
   teamSize: 4
-  time: 60
-  obstacleColumnPrefab: {fileID: 4697184305417140046, guid: 376e3f7d98981ee428c73bc5ce47469e, type: 3}
-  obstacleRowPrefab: {fileID: 4697184305417140046, guid: b29848c6e17345b43b4e638b7c9ba0e8, type: 3}
+  obstacles: 9
+  obstaclePrefab: {fileID: 4697184305417140046, guid: 376e3f7d98981ee428c73bc5ce47469e, type: 3}
   playerPrefab: {fileID: 598931724242233961, guid: bffe5195298770f459447569f660d12d, type: 3}
   turretPrefabs:
   - {fileID: 5662805474141995351, guid: 6dab08eab5e59f34cb6e58d2dae17f7c, type: 3}

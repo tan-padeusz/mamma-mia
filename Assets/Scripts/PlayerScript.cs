@@ -41,6 +41,7 @@ public class PlayerScript : MonoBehaviour
 
     private void Update()
     {
+        if (Time.timeScale < 1) return;
         this._myRenderer.material = this._myMaterial;
         if (this._cameraTransform != null) this._playerAction?.Invoke();
     }
@@ -136,7 +137,7 @@ public class PlayerScript : MonoBehaviour
     private void ModifySpeed(Team team)
     {
         if (this._isSpeedModified) return;
-        var turretCount = (double) GameManagerScript.Instance.GetTurretsForTeam(this._myTeam);
+        var turretCount = (double) GameManagerScript.GetTurretsForTeam(this._myTeam);
         this._isSpeedModified = true;
         this.StartCoroutine(team == this._myTeam ? this.SpeedUp(turretCount) : this.SlowDown(turretCount));
     }
