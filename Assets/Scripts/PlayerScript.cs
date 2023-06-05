@@ -84,7 +84,7 @@ public class PlayerScript : MonoBehaviour
         // if (Input.GetKey(KeyCode.Keypad9)) this._cameraTransform.Rotate(Vector3.up * (this.rotationSpeed * deltaTime));
 
         var mouseX = Input.GetAxis("Mouse X");
-        this._cameraTransform.Rotate(Vector3.up * (mouseX * this.rotationSpeed * deltaTime));
+        this._cameraTransform.Rotate(Vector3.up * (2 * mouseX * this.rotationSpeed * deltaTime));
 
         this._cameraTransform.position = this._myTransform.position;
                 

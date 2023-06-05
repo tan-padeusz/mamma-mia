@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -39,7 +40,7 @@ public class GameManagerScript : MonoBehaviour
         [SerializeField] private GameObject obstacleColumnPrefab;
         [SerializeField] private GameObject obstacleRowPrefab;
         [SerializeField] private GameObject playerPrefab;
-        [SerializeField] private GameObject turretPrefab;
+        [SerializeField] private List<GameObject> turretPrefabs;
 
         private int _blueTurretCount;
         private int _redTurretCount;
@@ -147,17 +148,11 @@ public class GameManagerScript : MonoBehaviour
                 var playerBluePosition = new Vector3(playerBlueXPosition, 0.5F, playerBlueZPosition);
                 var playerRedPosition = new Vector3(playerRedXPosition, 0.5F, playerRedZPosition);
 
-                var centerPoint = new Vector3(0, 0.5F, 0);
-                
                 var playerBlue = Instantiate(this.playerPrefab, playerBluePosition, new Quaternion());
-                playerBlue.transform.LookAt(centerPoint);
-                this.playerBlueCamera.transform.LookAt(centerPoint);
                 var playerBlueScript = playerBlue.GetComponent<PlayerScript>();
                 if (playerBlueScript != null) playerBlueScript.ResetPlayer(Team.Blue, this.playerBlueCamera.transform);
 
                 var playerRed = Instantiate(this.playerPrefab, playerRedPosition, new Quaternion());
-                playerRed.transform.LookAt(centerPoint);
-                this.playerRedCamera.transform.LookAt(centerPoint);
                 var playerRedScript = playerRed.GetComponent<PlayerScript>();
                 if (playerRedScript != null) playerRedScript.ResetPlayer(Team.Red, this.playerRedCamera.transform);
         }
@@ -239,7 +234,8 @@ public class GameManagerScript : MonoBehaviour
                         var xPosition = (column - center) * this.nodeDistance;
                         var zPosition = (center - row) * this.nodeDistance;
                         var position = new Vector3(xPosition, 0.5F, zPosition);
-                        var turret = Instantiate(this.turretPrefab, position, new Quaternion());
+                        var turretPrefab = this.turretPrefabs[Random.Range(0, this.turretPrefabs.Count)];
+                        var turret = Instantiate(turretPrefab, position, new Quaternion());
                         var turretScript = turret.GetComponent<TurretScript>();
                         if (turretScript == null) return;
                         // var team = index % 2 == 0 ? Team.Blue : Team.Red;
