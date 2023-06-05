@@ -235,11 +235,7 @@ public class GameManagerScript : MonoBehaviour
                         var zPosition = (center - row) * this.nodeDistance;
                         var position = new Vector3(xPosition, 0.5F, zPosition);
                         var turretPrefab = this.turretPrefabs[Random.Range(0, this.turretPrefabs.Count)];
-                        var turret = Instantiate(turretPrefab, position, new Quaternion());
-                        var turretScript = turret.GetComponent<TurretScript>();
-                        if (turretScript == null) return;
-                        // var team = index % 2 == 0 ? Team.Blue : Team.Red;
-                        turretScript.ResetTurret(Team.Neutral);
+                        Instantiate(turretPrefab, position, new Quaternion());
                 }
         }
 }

@@ -23,7 +23,7 @@ public class TurretScript : MonoBehaviour
 
     private Renderer _myRenderer;
     private Material _myMaterial;
-    private Team _myTeam;
+    private Team _myTeam = Team.Neutral;
     
     public Team GetTurretTeam()
     {
@@ -33,6 +33,7 @@ public class TurretScript : MonoBehaviour
     private void Start()
     {
         this._health = this.baseHealth;
+        this._myMaterial = teamNeutralMaterial;
         this._myRenderer = this.GetComponent<Renderer>();
     }
 
