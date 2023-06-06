@@ -68,7 +68,7 @@ public class PlayerScript : MonoBehaviour
         }
                 
         if (!this._canShoot) return;
-        if (Input.GetKey(KeyCode.Z)) this.StartCoroutine(this.ShootBullet());
+        if (Input.GetKey(KeyCode.K)) this.StartCoroutine(this.ShootBullet());
     }
 
     private void PlayerRedAction()

@@ -20,23 +20,17 @@ public class GameManagerScript : MonoBehaviour
         [SerializeField] private Camera playerRedCamera;
         
         [Header("Game")]
-        [SerializeField] private float length = 60;
+        [SerializeField] private int length = 60;
         private float _startTime;
-        [SerializeField] private int size = 2;
-        private int _gridSize;
-        [SerializeField] private float nodeDistance = 3.5F;
-        [SerializeField] private int teamSize = 3;
-        [SerializeField] private int obstacles = 4;
-        private int _maxObstacles;
-        
-        private bool[,] _grid;
-        private bool[,] _obstacleColumnGrid;
-        private bool[,] _obstacleRowGrid;
+        [SerializeField] private int gridSize = 5;
+        [SerializeField] private float gridNodeDistance = 7;
+        [SerializeField] private int turrets = 7;
+        [SerializeField] private int obstacles = 7;
         
         [Header("Prefabs")]
-        [SerializeField] private GameObject obstaclePrefab;
         [SerializeField] private GameObject playerPrefab;
         [SerializeField] private List<GameObject> turretPrefabs;
+        [SerializeField] private GameObject obstaclePrefab;
 
         private int _blueTurretCount;
         private int _redTurretCount;
@@ -58,27 +52,21 @@ public class GameManagerScript : MonoBehaviour
         {
                 Cursor.lockState = CursorLockMode.Confined;
                 Time.timeScale = 1;
-                
-                this.size = Math.Max(this.size, 1);
-                this._gridSize = 2 * this.size + 1;
-                while (2 * this.teamSize > this._gridSize * this._gridSize - 2)
-                        this.teamSize--;
-                
-                this._grid = new bool[this._gridSize, this._gridSize];
-                this._grid[0, 0] = true;
-                this._grid[this._gridSize - 1, this._gridSize - 1] = true;
 
-                this._maxObstacles = 2 * this._gridSize * (this._gridSize - 1);
-                this.obstacles = Math.Min(this._maxObstacles, this.obstacles);
-                this._obstacleColumnGrid = new bool[this._gridSize, this._gridSize - 1];
-                this._obstacleRowGrid = new bool[this._gridSize - 1, this._gridSize];
-                
+                if (this.gridSize % 2 == 0) this.gridSize++;
+                this.gridSize = Math.Clamp(this.gridSize, 5, 11);
+                this.gridNodeDistance = Math.Clamp(this.gridNodeDistance, 4F, 10F);
+                if (this.turrets % 2 == 0) this.turrets--;
+                this.turrets = Math.Clamp(this.turrets, 11, this.gridSize * this.gridSize - 2);
+                var maxObstacles = 2 * this.gridSize * (this.gridSize - 1);
+                this.obstacles = Math.Clamp(this.obstacles, maxObstacles / 4, maxObstacles);
+
                 this.SpawnPlayers();
                 this.SpawnTurrets();
                 this.SpawnObstacles();
 
-                this.turretBlueCounter.text = "blue turrets : " + this._blueTurretCount;
-                this.turretRedCounter.text = "red turrets : " + this._redTurretCount;
+                this.turretBlueCounter.text = "blue turrets : 0";
+                this.turretRedCounter.text = "red turrets : 0";
 
                 GameManagerScript.Instance = this;
 
@@ -87,19 +75,20 @@ public class GameManagerScript : MonoBehaviour
 
         private void Update()
         {
-                this.turretBlueCounter.text = "blue turrets : " + this._blueTurretCount;
-                this.turretRedCounter.text = "red turrets : " + this._redTurretCount;
+                this.turretBlueCounter.text = $"blue turrets : {this._blueTurretCount}";
+                this.turretRedCounter.text = $"red turrets : {this._redTurretCount}";
                 this.timeCounter.text = $"remaining time : {Math.Ceiling(this.length - (Time.time - this._startTime))}";
 
-                if (this._blueTurretCount < 2 * this.teamSize && this._redTurretCount < 2 * this.teamSize &&
+                if (this._blueTurretCount < 2 * this.turrets && this._redTurretCount < 2 * this.turrets &&
                     !(Time.time - this._startTime >= this.length)) return;
                 Time.timeScale = 0;
+                
                 if (this._blueTurretCount > this._redTurretCount) this.gameOverText.text = "player blue won";
                 else if (this._redTurretCount > this._blueTurretCount) this.gameOverText.text = "player red won";
                 else this.gameOverText.text = "game over : tie";
+                
                 this.backToMenuPanel.SetActive(true);
                 Cursor.lockState = CursorLockMode.None;
-
         }
 
         public void BackToMenu()
@@ -129,17 +118,17 @@ public class GameManagerScript : MonoBehaviour
 
         private void SpawnPlayers()
         {
-                var center = this._gridSize / 2;
+                var center = this.gridSize / 2;
                 
                 // var playerBlueRow = 0;
                 // var playerBlueColumn = 0;
-                var playerRedRow = this._gridSize - 1;
-                var playerRedColumn = this._gridSize - 1;
+                var playerRedRow = this.gridSize - 1;
+                var playerRedColumn = this.gridSize - 1;
 
-                var playerBlueXPosition = -center * this.nodeDistance;
-                var playerBlueZPosition = center * this.nodeDistance;
-                var playerRedXPosition = (playerRedColumn - center) * this.nodeDistance;
-                var playerRedZPosition = (center - playerRedRow) * this.nodeDistance;
+                var playerBlueXPosition = -center * this.gridNodeDistance;
+                var playerBlueZPosition = center * this.gridNodeDistance;
+                var playerRedXPosition = (playerRedColumn - center) * this.gridNodeDistance;
+                var playerRedZPosition = (center - playerRedRow) * this.gridNodeDistance;
 
                 var playerBluePosition = new Vector3(playerBlueXPosition, 0.5F, playerBlueZPosition);
                 var playerRedPosition = new Vector3(playerRedXPosition, 0.5F, playerRedZPosition);
@@ -152,88 +141,83 @@ public class GameManagerScript : MonoBehaviour
                 var playerRedScript = playerRed.GetComponent<PlayerScript>();
                 if (playerRedScript != null) playerRedScript.ResetPlayer(Team.Red, this.playerRedCamera.transform);
         }
-
-        private void SpawnObstacles()
-        {
-                for (var index = 0; index < this.obstacles; index++)
-                {
-                        var random = UnityEngine.Random.Range(0, 2);
-                        if (random == 0)
-                        {
-                                if (!this.SpawnColumnObstacle()) this.SpawnRowObstacle();
-                        }
-                        else
-                        {
-                                if (!this.SpawnRowObstacle()) this.SpawnColumnObstacle();
-                        }
-                }
-        }
         
-        private bool SpawnColumnObstacle()
-        {
-                if (this.CountTaken(this._obstacleRowGrid) == this._maxObstacles / 2) return false;
-
-                int row, column;
-                do
-                {
-                        row = UnityEngine.Random.Range(0, this._gridSize);
-                        column = UnityEngine.Random.Range(0, this._gridSize - 1);
-                } while (this._obstacleColumnGrid[row, column]);
-                this._obstacleColumnGrid[row, column] = true;
-                
-                var center = this._gridSize / 2;
-                var xPosition = (column - center + 0.5F) * this.nodeDistance;
-                var zPosition = (center - row) * this.nodeDistance;
-                var obstaclePosition = new Vector3(xPosition, 1F, zPosition);
-                var obstacle = Instantiate(this.obstaclePrefab, obstaclePosition, new Quaternion());
-                obstacle.transform.localScale = new Vector3(1, 2, 2);
-                return true;
-        }
-
-        private bool SpawnRowObstacle()
-        {
-                if (this.CountTaken(this._obstacleColumnGrid) == this._maxObstacles / 2) return false;
-                
-                int row, column;
-                do
-                {
-                        row = UnityEngine.Random.Range(0, this._gridSize - 1);
-                        column = UnityEngine.Random.Range(0, this._gridSize);
-                } while (this._obstacleRowGrid[row, column]);
-                this._obstacleRowGrid[row, column] = true;
-                
-                var center = this._gridSize / 2;
-                var xPosition = (column - center) * this.nodeDistance;
-                var zPosition = (center - row - 0.5F) * this.nodeDistance;
-                var obstaclePosition = new Vector3(xPosition, 1F, zPosition);
-                var obstacle = Instantiate(this.obstaclePrefab, obstaclePosition, new Quaternion());
-                obstacle.transform.localScale = new Vector3(2, 2, 1);
-                return true;
-        }
-
-        private int CountTaken(bool[,] grid)
-        {
-                return grid.Cast<bool>().Count(element => element);
-        }
-
         private void SpawnTurrets()
         {
-                for (var index = 0; index < this.teamSize * 2; index++)
+                var size = this.gridSize;
+                var grid = new bool[size, size];
+                grid[0, 0] = true;
+                grid[size - 1, size - 1] = true;
+                
+                for (var index = 0; index < this.turrets; index++)
                 {
                         int row, column;
                         do
                         {
-                                row = UnityEngine.Random.Range(0, this._gridSize);
-                                column = UnityEngine.Random.Range(0, this._gridSize);
-                        } while (this._grid[row, column]);
-                        this._grid[row, column] = true;
+                                row = UnityEngine.Random.Range(0, size);
+                                column = UnityEngine.Random.Range(0, size);
+                        } while (grid[row, column]);
+                        grid[row, column] = true;
 
-                        var center = this._gridSize / 2;
-                        var xPosition = (column - center) * this.nodeDistance;
-                        var zPosition = (center - row) * this.nodeDistance;
+                        var center = size / 2;
+                        var xPosition = (column - center) * this.gridNodeDistance;
+                        var zPosition = (center - row) * this.gridNodeDistance;
                         var position = new Vector3(xPosition, 0.5F, zPosition);
                         var turretPrefab = this.turretPrefabs[UnityEngine.Random.Range(0, this.turretPrefabs.Count)];
                         Instantiate(turretPrefab, position, new Quaternion());
+                }
+        }
+
+        private void SpawnObstacles()
+        {
+                var size = this.gridSize;
+                var center = size / 2;
+                var rowObstaclesGrid = new bool[size - 1, size];
+                var columnObstaclesGrid = new bool[size, size - 1];
+                
+                for (var index = 0; index < this.obstacles; index++)
+                {
+                        var rowObstaclesSpawned = rowObstaclesGrid.Cast<bool>().Count(element => element);
+                        var columnObstaclesSpawned = columnObstaclesGrid.Cast<bool>().Count(element => element);
+                        var random = UnityEngine.Random.Range(0, 2);
+                        if (random == 0 && rowObstaclesSpawned == rowObstaclesGrid.Length) random = 1;
+                        else if (columnObstaclesSpawned == columnObstaclesGrid.Length) random = 0;
+                        
+                        
+                        int row, column;
+                        float positionX, positionZ;
+                        
+                        // spawning row obstacle
+                        if (random == 0)
+                        {
+                                do
+                                {
+                                        row = UnityEngine.Random.Range(0, size - 1);
+                                        column = UnityEngine.Random.Range(0, size);
+                                } while (rowObstaclesGrid[row, column]);
+                                rowObstaclesGrid[row, column] = true;
+
+                                positionX = (column - center) * this.gridNodeDistance;
+                                positionZ = (center - row - 0.5F) * this.gridNodeDistance;
+                        }
+
+                        // spawning column obstacle
+                        else
+                        {
+                                do
+                                {
+                                        row = UnityEngine.Random.Range(0, size);
+                                        column = UnityEngine.Random.Range(0, size - 1);
+                                } while (columnObstaclesGrid[row, column]);
+                                columnObstaclesGrid[row, column] = true;
+
+                                positionX = (column - center + 0.5F) * this.gridNodeDistance;
+                                positionZ = (center - row) * this.gridNodeDistance;
+                        }
+
+                        var position = new Vector3(positionX, 1F, positionZ);
+                        var obstacle = Instantiate(this.obstaclePrefab, position, new Quaternion());
+                        obstacle.transform.localScale = random == 0 ? new Vector3(2, 2, 1) : new Vector3(1, 2, 2);
                 }
         }
 }
