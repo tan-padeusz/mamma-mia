@@ -54,7 +54,6 @@ public class BulletScript : MonoBehaviour
             if (turretTeam == this._myTeam) return;
             if (turretScript.DecreaseHealth(this._damage) > 0) return;
             turretScript.ResetTurret(this._myTeam);
-            GameManagerScript.AddTurretForTeam(turretTeam, this._myTeam);
         }
         this.SelfDestruct();
     }

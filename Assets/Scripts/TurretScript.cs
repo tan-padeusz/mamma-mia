@@ -68,9 +68,10 @@ public class TurretScript : MonoBehaviour
 
     public void ResetTurret(Team team)
     {
-        this._health = this.baseHealth;
+        GameManagerScript.AddTurretForTeam(this._myTeam, team);
         this._myTeam = team;
-        
+        this._health = this.baseHealth;
+
         this._myMaterial = team switch
         {
             Team.Blue => this.teamBlueMaterial,

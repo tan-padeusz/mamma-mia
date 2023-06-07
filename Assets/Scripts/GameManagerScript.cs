@@ -101,20 +101,24 @@ public class GameManagerScript : MonoBehaviour
 
         public static void AddTurretForTeam(Team oldTeam, Team newTeam)
         {
+                switch (oldTeam)
+                {
+                        case Team.Blue:
+                                GameManagerScript.Instance._blueTurretCount--;
+                                break;
+                        case Team.Red:
+                                GameManagerScript.Instance._redTurretCount--;
+                                break;
+                }
+
                 switch (newTeam)
                 {
                         case Team.Blue:
                                 GameManagerScript.Instance._blueTurretCount++;
-                                if (oldTeam == Team.Red) GameManagerScript.Instance._redTurretCount--;
-                                break;
-                        case Team.Neutral:
                                 break;
                         case Team.Red:
                                 GameManagerScript.Instance._redTurretCount++;
-                                if (oldTeam == Team.Blue) GameManagerScript.Instance._blueTurretCount--;
                                 break;
-                        default:
-                                throw new ArgumentOutOfRangeException(nameof(newTeam), newTeam, null);
                 }
         }
 
