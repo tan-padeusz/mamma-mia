@@ -109,6 +109,10 @@ public class GameManagerScript : MonoBehaviour
                         case Team.Red:
                                 GameManagerScript.Instance._redTurretCount--;
                                 break;
+                        case Team.Neutral:
+                                break;
+                        default:
+                                throw new ArgumentOutOfRangeException(nameof(oldTeam), oldTeam, null);
                 }
 
                 switch (newTeam)
@@ -119,6 +123,10 @@ public class GameManagerScript : MonoBehaviour
                         case Team.Red:
                                 GameManagerScript.Instance._redTurretCount++;
                                 break;
+                        case Team.Neutral:
+                                break;
+                        default:
+                                throw new ArgumentOutOfRangeException(nameof(newTeam), newTeam, null);
                 }
         }
 
