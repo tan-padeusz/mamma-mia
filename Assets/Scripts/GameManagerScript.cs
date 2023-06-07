@@ -26,8 +26,9 @@ public class GameManagerScript : MonoBehaviour
         [SerializeField] private float gridNodeDistance = 7;
         [SerializeField] private int turrets = 7;
         [SerializeField] private int obstacles = 7;
-        
+
         [Header("Prefabs")]
+        [SerializeField] private GameObject groundPrefab;
         [SerializeField] private GameObject playerPrefab;
         [SerializeField] private List<GameObject> turretPrefabs;
         [SerializeField] private GameObject obstaclePrefab;
@@ -61,6 +62,7 @@ public class GameManagerScript : MonoBehaviour
                 var maxObstacles = 2 * this.gridSize * (this.gridSize - 1);
                 this.obstacles = Math.Clamp(this.obstacles, maxObstacles / 4, maxObstacles);
 
+                this.SpawnArena();
                 this.SpawnPlayers();
                 this.SpawnTurrets();
                 this.SpawnObstacles();
@@ -114,6 +116,42 @@ public class GameManagerScript : MonoBehaviour
                         default:
                                 throw new ArgumentOutOfRangeException(nameof(newTeam), newTeam, null);
                 }
+        }
+
+        private void SpawnArena()
+        {
+                var extendedSize = this.gridSize + 2;
+                var center = extendedSize / 2;
+                var physicalSize = (extendedSize - 1) * this.gridNodeDistance + 2F;
+                var groundPosition = new Vector3(0, -0.5F, 0);
+                var ground = Instantiate(this.groundPrefab, groundPosition, new Quaternion());
+                ground.transform.localScale = new Vector3(physicalSize, 1F, physicalSize);
+
+                var positionX = -center * this.gridNodeDistance;
+                var positionZ = 0F;
+                var obstaclePosition = new Vector3(positionX, 1F, positionZ);
+                var obstacle = Instantiate(this.obstaclePrefab, obstaclePosition, new Quaternion());
+                obstacle.GetComponent<Transform>().localScale = new Vector3(1F, 2F, physicalSize);
+                obstacle.GetComponent<Renderer>().material.mainTextureScale = new Vector2(20, 2);
+
+                positionX = (extendedSize - 1 - center) * this.gridNodeDistance;
+                obstaclePosition = new Vector3(positionX, 1F, positionZ);
+                obstacle = Instantiate(this.obstaclePrefab, obstaclePosition, new Quaternion());
+                obstacle.GetComponent<Transform>().localScale = new Vector3(1F, 2F, physicalSize);
+                obstacle.GetComponent<Renderer>().material.mainTextureScale = new Vector2(20, 2);
+
+                positionX = 0;
+                positionZ = center * this.gridNodeDistance;
+                obstaclePosition = new Vector3(positionX, 1F, positionZ);
+                obstacle = Instantiate(this.obstaclePrefab, obstaclePosition, new Quaternion());
+                obstacle.GetComponent<Transform>().localScale = new Vector3(physicalSize, 2F, 1F);
+                obstacle.GetComponent<Renderer>().material.mainTextureScale = new Vector2(20, 2);
+
+                positionZ = (center - extendedSize + 1) * this.gridNodeDistance;
+                obstaclePosition = new Vector3(positionX, 1F, positionZ);
+                obstacle = Instantiate(this.obstaclePrefab, obstaclePosition, new Quaternion());
+                obstacle.GetComponent<Transform>().localScale = new Vector3(physicalSize, 2F, 1F);
+                obstacle.GetComponent<Renderer>().material.mainTextureScale = new Vector2(20, 2);
         }
 
         private void SpawnPlayers()
@@ -186,6 +224,7 @@ public class GameManagerScript : MonoBehaviour
                         
                         int row, column;
                         float positionX, positionZ;
+                        Vector3 scale;
                         
                         // spawning row obstacle
                         if (random == 0)
@@ -199,6 +238,7 @@ public class GameManagerScript : MonoBehaviour
 
                                 positionX = (column - center) * this.gridNodeDistance;
                                 positionZ = (center - row - 0.5F) * this.gridNodeDistance;
+                                scale = new Vector3(2F, 2F, 1F);
                         }
 
                         // spawning column obstacle
@@ -213,11 +253,12 @@ public class GameManagerScript : MonoBehaviour
 
                                 positionX = (column - center + 0.5F) * this.gridNodeDistance;
                                 positionZ = (center - row) * this.gridNodeDistance;
+                                scale = new Vector3(1F, 2F, 2F);
                         }
 
                         var position = new Vector3(positionX, 1F, positionZ);
                         var obstacle = Instantiate(this.obstaclePrefab, position, new Quaternion());
-                        obstacle.transform.localScale = random == 0 ? new Vector3(2, 2, 1) : new Vector3(1, 2, 2);
+                        obstacle.transform.localScale = scale;
                 }
         }
 }
