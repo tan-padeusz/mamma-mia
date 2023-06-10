@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.Audio;
 
 public class BulletScript : MonoBehaviour
 {
@@ -38,6 +37,8 @@ public class BulletScript : MonoBehaviour
 
     private void Update()
     {
+        if (Time.timeScale == 0) this.SelfDestruct();
+        
         this._myRenderer.material = this._myMaterial;
         if (Time.time - this._startTime > BulletScript.Lifespan) this.SelfDestruct();
         var selfTransform = this.transform;

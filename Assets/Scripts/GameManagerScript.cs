@@ -4,16 +4,29 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 
-using UnityEngine.SceneManagement;
-
 public class GameManagerScript : MonoBehaviour
 {
-        [Header("UI")]
-        [SerializeField] private TextMeshProUGUI turretBlueCounter;
-        [SerializeField] private TextMeshProUGUI turretRedCounter;
-        [SerializeField] private TextMeshProUGUI gameOverText;
-        [SerializeField] private GameObject backToMenuPanel;
-        [SerializeField] private TextMeshProUGUI timeCounter;
+        [Header("Canvases")]
+        [SerializeField] private Canvas menuCanvas;
+        [SerializeField] private Canvas gameCanvas;
+        [SerializeField] private Canvas gameOverCanvas;
+        [SerializeField] private Canvas goalsCanvas;
+        [SerializeField] private Canvas controlsCanvas;
+        [SerializeField] private Canvas settingsCanvas;
+        [SerializeField] private Canvas creditsCanvas;
+        
+        [Header("Settings")]
+        [SerializeField] private TMP_InputField lengthInput;
+        [SerializeField] private TMP_InputField gridSizeInput;
+        [SerializeField] private TMP_InputField gridNodeDistanceInput;
+        [SerializeField] private TMP_InputField turretsInput;
+        [SerializeField] private TMP_InputField obstaclesInput;
+
+        [Header("Game UI")]
+        [SerializeField] private TMP_Text turretBlueCounter;
+        [SerializeField] private TMP_Text turretRedCounter;
+        [SerializeField] private TMP_Text timeCounter;
+        [SerializeField] private TMP_Text resultText;
         
         [Header("Cameras")]
         [SerializeField] private Camera playerBlueCamera;
@@ -23,9 +36,9 @@ public class GameManagerScript : MonoBehaviour
         [SerializeField] private int length = 60;
         private float _startTime;
         [SerializeField] private int gridSize = 5;
-        [SerializeField] private float gridNodeDistance = 7;
-        [SerializeField] private int turrets = 7;
-        [SerializeField] private int obstacles = 7;
+        [SerializeField] private int gridNodeDistance = 7;
+        [SerializeField] private int turrets = 9;
+        [SerializeField] private int obstacles = 15;
 
         [Header("Prefabs")]
         [SerializeField] private GameObject groundPrefab;
@@ -35,68 +48,95 @@ public class GameManagerScript : MonoBehaviour
 
         private int _blueTurretCount;
         private int _redTurretCount;
-        
-        private static GameManagerScript Instance { get; set; }
+
+        private readonly List<GameObject> _gameObjects = new List<GameObject>();
+        private static GameManagerScript _instance;
 
         public static int GetTurretsForTeam(Team team)
         {
                 var turretCount = team switch
                 {
-                        Team.Blue => GameManagerScript.Instance._blueTurretCount,
-                        Team.Red => GameManagerScript.Instance._redTurretCount,
+                        Team.Blue => GameManagerScript._instance._blueTurretCount,
+                        Team.Red => GameManagerScript._instance._redTurretCount,
                         _ => 0
                 };
                 return Math.Max(turretCount, 1);
         }
 
+        private void EnableCanvas(GameCanvas canvas)
+        {
+                this.menuCanvas.enabled = canvas == GameCanvas.Menu;
+                this.gameCanvas.enabled = canvas == GameCanvas.Game;
+                this.gameOverCanvas.enabled = canvas == GameCanvas.GameOver;
+                this.goalsCanvas.enabled = canvas == GameCanvas.Goals;
+                this.controlsCanvas.enabled = canvas == GameCanvas.Controls;
+                this.settingsCanvas.enabled = canvas == GameCanvas.Settings;
+                this.creditsCanvas.enabled = canvas == GameCanvas.Credits;
+        }
+
         private void Start()
         {
-                Cursor.lockState = CursorLockMode.Confined;
-                Time.timeScale = 1;
+                Time.timeScale = 0;
+                Cursor.lockState = CursorLockMode.None;
+                this.EnableCanvas(GameCanvas.Menu);
 
-                if (this.gridSize % 2 == 0) this.gridSize++;
-                this.gridSize = Math.Clamp(this.gridSize, 5, 11);
-                this.gridNodeDistance = Math.Clamp(this.gridNodeDistance, 4F, 10F);
-                if (this.turrets % 2 == 0) this.turrets--;
-                this.turrets = Math.Clamp(this.turrets, 11, this.gridSize * this.gridSize - 2);
-                var maxObstacles = 2 * this.gridSize * (this.gridSize - 1);
-                this.obstacles = Math.Clamp(this.obstacles, maxObstacles / 4, maxObstacles);
+                this.lengthInput.text = $"{this.length}";
+                this.gridSizeInput.text = $"{this.gridSize}";
+                this.gridNodeDistanceInput.text = $"{this.gridNodeDistance}";
+                this.turretsInput.text = $"{this.turrets}";
+                this.obstaclesInput.text = $"{this.obstacles}";
 
-                this.SpawnArena();
-                this.SpawnPlayers();
-                this.SpawnTurrets();
-                this.SpawnObstacles();
+                GameManagerScript._instance = this;
 
-                this.turretBlueCounter.text = "blue turrets : 0";
-                this.turretRedCounter.text = "red turrets : 0";
-
-                GameManagerScript.Instance = this;
-
-                this._startTime = Time.time;
+                // Cursor.lockState = CursorLockMode.Confined;
+                // Time.timeScale = 1;
+                //
+                // if (this.gridSize % 2 == 0) this.gridSize++;
+                // this.gridSize = Math.Clamp(this.gridSize, 5, 11);
+                // this.gridNodeDistance = Math.Clamp(this.gridNodeDistance, 4F, 10F);
+                // if (this.turrets % 2 == 0) this.turrets--;
+                // this.turrets = Math.Clamp(this.turrets, 11, this.gridSize * this.gridSize - 2);
+                // var maxObstacles = 2 * this.gridSize * (this.gridSize - 1);
+                // this.obstacles = Math.Clamp(this.obstacles, maxObstacles / 4, maxObstacles);
+                //
+                // this.SpawnArena();
+                // this.SpawnPlayers();
+                // this.SpawnTurrets();
+                // this.SpawnObstacles();
+                //
+                // this.turretBlueCounter.text = "blue turrets : 0";
+                // this.turretRedCounter.text = "red turrets : 0";
+                //
+                // GameManagerScript.Instance = this;
+                //
+                // this._startTime = Time.time;
         }
 
         private void Update()
         {
-                this.turretBlueCounter.text = $"blue turrets : {this._blueTurretCount}";
-                this.turretRedCounter.text = $"red turrets : {this._redTurretCount}";
-                this.timeCounter.text = $"remaining time : {Math.Ceiling(this.length - (Time.time - this._startTime))}";
+                if (Math.Abs(Time.timeScale - 1.0F) > 0.001F) return;
 
-                if (this._blueTurretCount < 2 * this.turrets && this._redTurretCount < 2 * this.turrets &&
-                    !(Time.time - this._startTime >= this.length)) return;
+                if (Input.GetKey(KeyCode.Backspace))
+                {
+                        Time.timeScale = 0;
+                        Cursor.lockState = CursorLockMode.None;
+                        this.BackButtonClicked();
+                }
+                
+                this.turretBlueCounter.text = $"BLUE TURRETS\n{this._blueTurretCount}";
+                this.turretRedCounter.text = $"RED TURRETS\n{this._redTurretCount}";
+                this.timeCounter.text = $"REMAINING TIME\n{Math.Ceiling(this.length - (Time.time - this._startTime))}";
+
+                if (this._blueTurretCount < this.turrets && this._redTurretCount < this.turrets && !(Time.time - this._startTime >= this.length)) return;
                 Time.timeScale = 0;
                 
-                if (this._blueTurretCount > this._redTurretCount) this.gameOverText.text = "player blue won";
-                else if (this._redTurretCount > this._blueTurretCount) this.gameOverText.text = "player red won";
-                else this.gameOverText.text = "game over : tie";
+                if (this._blueTurretCount > this._redTurretCount) this.resultText.text = "PLAYER BLUE WON!";
+                else if (this._redTurretCount > this._blueTurretCount) this.resultText.text = "PLAYER RED WON!";
+                else this.resultText.text = "TIE!";
                 
-                this.backToMenuPanel.SetActive(true);
+                this.EnableCanvas(GameCanvas.GameOver);
+                
                 Cursor.lockState = CursorLockMode.None;
-        }
-
-        public void BackToMenu()
-        {
-                Cursor.lockState = CursorLockMode.None;
-                SceneManager.LoadScene("Scenes/MenuScene");
         }
 
         public static void AddTurretForTeam(Team oldTeam, Team newTeam)
@@ -104,10 +144,10 @@ public class GameManagerScript : MonoBehaviour
                 switch (oldTeam)
                 {
                         case Team.Blue:
-                                GameManagerScript.Instance._blueTurretCount--;
+                                GameManagerScript._instance._blueTurretCount--;
                                 break;
                         case Team.Red:
-                                GameManagerScript.Instance._redTurretCount--;
+                                GameManagerScript._instance._redTurretCount--;
                                 break;
                         case Team.Neutral:
                                 break;
@@ -118,10 +158,10 @@ public class GameManagerScript : MonoBehaviour
                 switch (newTeam)
                 {
                         case Team.Blue:
-                                GameManagerScript.Instance._blueTurretCount++;
+                                GameManagerScript._instance._blueTurretCount++;
                                 break;
                         case Team.Red:
-                                GameManagerScript.Instance._redTurretCount++;
+                                GameManagerScript._instance._redTurretCount++;
                                 break;
                         case Team.Neutral:
                                 break;
@@ -138,6 +178,7 @@ public class GameManagerScript : MonoBehaviour
                 var groundPosition = new Vector3(0, -0.5F, 0);
                 var ground = Instantiate(this.groundPrefab, groundPosition, new Quaternion());
                 ground.transform.localScale = new Vector3(physicalSize, 1F, physicalSize);
+                this._gameObjects.Add(ground);
 
                 var positionX = -center * this.gridNodeDistance;
                 var positionZ = 0F;
@@ -145,12 +186,14 @@ public class GameManagerScript : MonoBehaviour
                 var obstacle = Instantiate(this.obstaclePrefab, obstaclePosition, new Quaternion());
                 obstacle.GetComponent<Transform>().localScale = new Vector3(1F, 2F, physicalSize);
                 obstacle.GetComponent<Renderer>().material.mainTextureScale = new Vector2(20, 2);
+                this._gameObjects.Add(obstacle);
 
                 positionX = (extendedSize - 1 - center) * this.gridNodeDistance;
                 obstaclePosition = new Vector3(positionX, 1F, positionZ);
                 obstacle = Instantiate(this.obstaclePrefab, obstaclePosition, new Quaternion());
                 obstacle.GetComponent<Transform>().localScale = new Vector3(1F, 2F, physicalSize);
                 obstacle.GetComponent<Renderer>().material.mainTextureScale = new Vector2(20, 2);
+                this._gameObjects.Add(obstacle);
 
                 positionX = 0;
                 positionZ = center * this.gridNodeDistance;
@@ -158,12 +201,14 @@ public class GameManagerScript : MonoBehaviour
                 obstacle = Instantiate(this.obstaclePrefab, obstaclePosition, new Quaternion());
                 obstacle.GetComponent<Transform>().localScale = new Vector3(physicalSize, 2F, 1F);
                 obstacle.GetComponent<Renderer>().material.mainTextureScale = new Vector2(20, 2);
+                this._gameObjects.Add(obstacle);
 
                 positionZ = (center - extendedSize + 1) * this.gridNodeDistance;
                 obstaclePosition = new Vector3(positionX, 1F, positionZ);
                 obstacle = Instantiate(this.obstaclePrefab, obstaclePosition, new Quaternion());
                 obstacle.GetComponent<Transform>().localScale = new Vector3(physicalSize, 2F, 1F);
                 obstacle.GetComponent<Renderer>().material.mainTextureScale = new Vector2(20, 2);
+                this._gameObjects.Add(obstacle);
         }
 
         private void SpawnPlayers()
@@ -185,11 +230,21 @@ public class GameManagerScript : MonoBehaviour
 
                 var playerBlue = Instantiate(this.playerPrefab, playerBluePosition, new Quaternion());
                 var playerBlueScript = playerBlue.GetComponent<PlayerScript>();
-                if (playerBlueScript != null) playerBlueScript.ResetPlayer(Team.Blue, this.playerBlueCamera.transform);
+                if (playerBlueScript != null)
+                {
+                        playerBlueScript.SetGameManager(this);
+                        playerBlueScript.ResetPlayer(Team.Blue, this.playerBlueCamera.transform);
+                }
+                this._gameObjects.Add(playerBlue);
 
                 var playerRed = Instantiate(this.playerPrefab, playerRedPosition, new Quaternion());
                 var playerRedScript = playerRed.GetComponent<PlayerScript>();
-                if (playerRedScript != null) playerRedScript.ResetPlayer(Team.Red, this.playerRedCamera.transform);
+                if (playerRedScript != null)
+                {
+                        playerRedScript.SetGameManager(this);
+                        playerRedScript.ResetPlayer(Team.Red, this.playerRedCamera.transform);
+                }
+                this._gameObjects.Add(playerRed);
         }
         
         private void SpawnTurrets()
@@ -214,7 +269,9 @@ public class GameManagerScript : MonoBehaviour
                         var zPosition = (center - row) * this.gridNodeDistance;
                         var position = new Vector3(xPosition, 0.5F, zPosition);
                         var turretPrefab = this.turretPrefabs[UnityEngine.Random.Range(0, this.turretPrefabs.Count)];
-                        Instantiate(turretPrefab, position, new Quaternion());
+                        var turret = Instantiate(turretPrefab, position, new Quaternion());
+                        turret.GetComponent<TurretScript>().SetCamera(this.playerBlueCamera, this.playerRedCamera);
+                        this._gameObjects.Add(turret);
                 }
         }
 
@@ -271,6 +328,117 @@ public class GameManagerScript : MonoBehaviour
                         var position = new Vector3(positionX, 1F, positionZ);
                         var obstacle = Instantiate(this.obstaclePrefab, position, new Quaternion());
                         obstacle.transform.localScale = scale;
+                        this._gameObjects.Add(obstacle);
                 }
         }
+        
+        #region Button Events
+
+        public void StartButtonClicked()
+        {
+                Time.timeScale = 1;
+                Cursor.lockState = CursorLockMode.Confined;
+                
+                if (this.gridSize % 2 == 0) this.gridSize++;
+                this.gridSize = Math.Clamp(this.gridSize, 5, 11);
+                this.gridNodeDistance = Math.Clamp(this.gridNodeDistance, 4, 10);
+                if (this.turrets % 2 == 0) this.turrets--;
+                this.turrets = Math.Clamp(this.turrets, 11, this.gridSize * this.gridSize - 2);
+                var maxObstacles = 2 * this.gridSize * (this.gridSize - 1);
+                this.obstacles = Math.Clamp(this.obstacles, maxObstacles / 4, maxObstacles);
+                
+                this.lengthInput.text = $"{this.length}";
+                this.gridSizeInput.text = $"{this.gridSize}";
+                this.gridNodeDistanceInput.text = $"{this.gridNodeDistance}";
+                this.turretsInput.text = $"{this.turrets}";
+                this.obstaclesInput.text = $"{this.obstacles}";
+
+                this.SpawnArena();
+                this.SpawnPlayers();
+                this.SpawnTurrets();
+                this.SpawnObstacles();
+
+                this._blueTurretCount = 0;
+                this.turretBlueCounter.text = $"BLUE TURRETS\n{this._blueTurretCount}";
+                this._redTurretCount = 0;
+                this.turretRedCounter.text = $"RED TURRETS\n{this._redTurretCount}";
+
+                this.EnableCanvas(GameCanvas.Game);
+                
+                this._startTime = Time.time;
+        }
+
+        public void GoalsButtonClicked()
+        {
+                this.EnableCanvas(GameCanvas.Goals);
+        }
+
+        public void ControlsButtonClicked()
+        {
+                this.EnableCanvas(GameCanvas.Controls);
+        }
+
+        public void SettingsButtonClicked()
+        {
+                this.EnableCanvas(GameCanvas.Settings);
+        }
+
+        public void CreditsButtonClicked()
+        {
+                this.EnableCanvas(GameCanvas.Credits);
+        }
+
+        public void QuitButtonClicked()
+        {
+                Application.Quit();
+        }
+
+        public void BackButtonClicked()
+        {
+                foreach (var element in this._gameObjects)
+                        Destroy(element);
+                this._gameObjects.Clear();
+                this.EnableCanvas(GameCanvas.Menu);
+        }
+
+        #endregion
+
+        #region Settings Events
+
+        public void OnLengthValueChanged(string value)
+        {
+                Debug.Log("length value changed");
+                // 60 seconds is default value
+                this.length = int.TryParse(value, out var numericValue) ? numericValue : 60;
+        }
+
+        public void OnGridSizeValueChanged(string value)
+        {
+                Debug.Log("grid size value changed");
+                // size of 5 is default grid size value
+                this.gridSize = int.TryParse(value, out var numericValue) ? numericValue : 5;
+        }
+
+        public void OnGridNodeDistanceValueChanged(string value)
+        {
+                Debug.Log("grid node distance value changed");
+                // 7 units is default node distance value
+                this.gridNodeDistance = int.TryParse(value, out var numericValue) ? numericValue : 7;
+        }
+
+        public void OnTurretsValueChanged(string value)
+        {
+                Debug.Log("turrets value changed");
+                // 9 turrets is default value
+                this.turrets = int.TryParse(value, out var numericValue) ? numericValue : 9;
+        }
+
+        public void OnObstaclesValueChanged(string value)
+        {
+                Debug.Log("obstacles value changed");
+                // 15 obstacles is default value
+                this.obstacles = int.TryParse(value, out var numericValue) ? numericValue : 15;
+        }
+
+        #endregion
 }

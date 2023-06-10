@@ -1,10 +1,11 @@
 using System;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class PlayerScript : MonoBehaviour
 {
+    private GameManagerScript _gameManager;
+    
     [Header("Bullet")]
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private int bulletDamage = 1;
@@ -61,12 +62,6 @@ public class PlayerScript : MonoBehaviour
 
         this._cameraTransform.position = this._myTransform.position;
 
-        if (Input.GetKey(KeyCode.Backspace))
-        {
-            Cursor.lockState = CursorLockMode.None;
-            SceneManager.LoadScene("Scenes/MenuScene");
-        }
-                
         if (!this._canShoot) return;
         if (Input.GetKey(KeyCode.K)) this.StartCoroutine(this.ShootBullet());
     }
@@ -137,7 +132,7 @@ public class PlayerScript : MonoBehaviour
     private void ModifySpeed(Team team)
     {
         if (this._isSpeedModified) return;
-        var turretCount = (double) GameManagerScript.GetTurretsForTeam(this._myTeam);
+        var turretCount = GameManagerScript.GetTurretsForTeam(this._myTeam);
         this._isSpeedModified = true;
         this.StartCoroutine(team == this._myTeam ? this.SpeedUp(turretCount) : this.SlowDown(turretCount));
     }
@@ -158,5 +153,10 @@ public class PlayerScript : MonoBehaviour
         yield return new WaitForSeconds(this.bdTime);
         this.movementSpeed = currentSpeed;
         this._isSpeedModified = false;
+    }
+
+    public void SetGameManager(GameManagerScript gameManager)
+    {
+        this._gameManager = gameManager;
     }
 }

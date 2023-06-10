@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -24,6 +25,9 @@ public class TurretScript : MonoBehaviour
     private Renderer _myRenderer;
     private Material _myMaterial;
     private Team _myTeam = Team.Neutral;
+
+    private Camera _playerBlueCamera;
+    private Camera _playerRedCamera;
     
     public Team GetTurretTeam()
     {
@@ -48,16 +52,37 @@ public class TurretScript : MonoBehaviour
     {
         this._canShoot = false;
         var myTransform = this.transform;
-        var rotation = Random.Range(-this.maxRotation, this.maxRotation);
-        myTransform.Rotate(0, rotation, 0);
+        var rotationAngle = Random.Range(-this.maxRotation, this.maxRotation);
+        myTransform.Rotate(0, rotationAngle, 0);
         var bulletPosition = myTransform.position + myTransform.forward;
-        
         var bullet = Instantiate(this.bulletPrefab, bulletPosition, myTransform.rotation);
         var bulletScript = bullet.GetComponent<BulletScript>();
         if (bulletScript != null) bulletScript.ResetBullet(this._myTeam, this.bulletDamage, this.bulletSpeed);
         
         yield return new WaitForSeconds(this.bulletInterval);
         this._canShoot = true;
+    }
+
+    public void SetCamera(Camera playerBlueCamera, Camera playerRedCamera)
+    {
+        this._playerBlueCamera = playerBlueCamera;
+        this._playerRedCamera = playerRedCamera;
+    }
+
+    public Camera GetCameraForTeam(Team team)
+    {
+        return team switch
+        {
+            Team.Blue => this._playerBlueCamera,
+            Team.Red => this._playerRedCamera,
+            Team.Neutral => null,
+            _ => throw new ArgumentOutOfRangeException(nameof(team), team, null)
+        };
+    }
+
+    public int GetHealth()
+    {
+        return this._health;
     }
 
     public int DecreaseHealth(int value)
