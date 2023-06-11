@@ -1,7 +1,6 @@
 using System;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class GameSettings : MonoBehaviour
 {
@@ -78,28 +77,13 @@ public class GameSettings : MonoBehaviour
         this.obstaclesInput.text = $"{this.obstacles}";
     }
 
-    public void OnGameLengthValueChanged(string stringValue)
+    public void ApplyButtonClicked()
     {
-        this.gameLength = int.TryParse(stringValue, out var numericValue) ? numericValue : this._defaultGameLength;
-    }
-
-    public void OnGridSizeValueChanged(string stringValue)
-    {
-        this.gridSize = int.TryParse(stringValue, out var numericValue) ? numericValue : this._defaultGridSize;
-    }
-    
-    public void OnGridNodeDistanceValueChanged(string stringValue)
-    {
-        this.gridNodeDistance = int.TryParse(stringValue, out var numericValue) ? numericValue : this._defaultGridNodeDistance;
-    }
-    
-    public void OnTurretsValueChanged(string stringValue)
-    {
-        this.turrets = int.TryParse(stringValue, out var numericValue) ? numericValue : this._defaultTurrets;
-    }
-    
-    public void OnObstaclesValueChanged(string stringValue)
-    {
-        this.obstacles = int.TryParse(stringValue, out var numericValue) ? numericValue : this._defaultObstacles;
+        this.gameLength = int.TryParse(this.gameLengthInput.text, out var numericValue) ? numericValue : this._defaultGameLength;
+        this.gridSize = int.TryParse(this.gridSizeInput.text, out numericValue) ? numericValue : this._defaultGridSize;
+        this.gridNodeDistance = int.TryParse(this.gridNodeDistanceInput.text, out numericValue) ? numericValue : this._defaultGridNodeDistance;
+        this.turrets = int.TryParse(this.turretsInput.text, out numericValue) ? numericValue : this._defaultTurrets;
+        this.obstacles = int.TryParse(this.obstaclesInput.text, out numericValue) ? numericValue : this._defaultObstacles;
+        this.Validate();
     }
 }
