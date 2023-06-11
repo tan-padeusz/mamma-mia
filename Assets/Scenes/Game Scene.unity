@@ -7143,7 +7143,7 @@ Canvas:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1049394722}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 0
   m_Camera: {fileID: 0}
@@ -8037,13 +8037,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5d24385a6404185b2a25a66e7e63566, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  menuCanvas: {fileID: 1049394725}
-  gameCanvas: {fileID: 898848939}
-  gameOverCanvas: {fileID: 1480516702}
-  goalsCanvas: {fileID: 253258665}
-  controlsCanvas: {fileID: 840191300}
-  settingsCanvas: {fileID: 57531487}
-  creditsCanvas: {fileID: 526310134}
   turretBlueCounter: {fileID: 1924584059}
   turretRedCounter: {fileID: 88829802}
   timeCounter: {fileID: 1526368668}

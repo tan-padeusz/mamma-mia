@@ -5,18 +5,19 @@ using UnityEngine;
 public class ScreenManager : MonoBehaviour
 {
     [SerializeField] private Canvas[] screens;
-    private readonly Dictionary<Screen, Canvas> _screens = new Dictionary<Screen, Canvas>();
+    private readonly Dictionary<GameScreen, Canvas> _screens = new Dictionary<GameScreen, Canvas>();
 
     private void Start()
     {
-        var enumValues = (Screen[]) Enum.GetValues(typeof(Screen));
+        var enumValues = (GameScreen[]) Enum.GetValues(typeof(GameScreen));
         for (var index = 0; index < this.screens.Length; index++)
             this._screens.Add(enumValues[index], this.screens[index]);
+        this.EnableScreen(GameScreen.Menu);
     }
 
-    public void EnableScreen(Screen screen)
+    public void EnableScreen(GameScreen gameScreen)
     {
         foreach (var (key, value) in this._screens)
-            value.enabled = key == screen;
+            value.enabled = key == gameScreen;
     }
 }

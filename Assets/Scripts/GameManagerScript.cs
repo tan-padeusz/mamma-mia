@@ -42,7 +42,6 @@ public class GameManagerScript : MonoBehaviour
                 Cursor.lockState = CursorLockMode.None;
                 this._screenManager = this.GetComponent<ScreenManager>();
                 this._gameSettings = this.GetComponent<GameSettings>();
-                this._screenManager.EnableScreen(Screen.Menu);
 
                 this._turretCount = new Dictionary<Team, int>
                 {
@@ -79,7 +78,7 @@ public class GameManagerScript : MonoBehaviour
                 else if (this._turretCount[Team.Red] > this._turretCount[Team.Blue]) this.resultText.text = "PLAYER RED WON!";
                 else this.resultText.text = "TIE!";
                 
-                this._screenManager.EnableScreen(Screen.GameOver);
+                this._screenManager.EnableScreen(GameScreen.GameOver);
                 
                 Cursor.lockState = CursorLockMode.None;
         }
@@ -276,29 +275,29 @@ public class GameManagerScript : MonoBehaviour
                 this.turretBlueCounter.text = $"BLUE TURRETS\n{this._turretCount[Team.Blue]}";
                 this.turretRedCounter.text = $"RED TURRETS\n{this._turretCount[Team.Red]}";
 
-                this._screenManager.EnableScreen(Screen.Game);
+                this._screenManager.EnableScreen(GameScreen.Game);
                 
                 this._startTime = Time.time;
         }
 
         public void GoalsButtonClicked()
         {
-                this._screenManager.EnableScreen(Screen.Goals);
+                this._screenManager.EnableScreen(GameScreen.Goals);
         }
 
         public void ControlsButtonClicked()
         {
-                this._screenManager.EnableScreen(Screen.Controls);
+                this._screenManager.EnableScreen(GameScreen.Controls);
         }
 
         public void SettingsButtonClicked()
         {
-                this._screenManager.EnableScreen(Screen.Settings);
+                this._screenManager.EnableScreen(GameScreen.Settings);
         }
 
         public void CreditsButtonClicked()
         {
-                this._screenManager.EnableScreen(Screen.Credits);
+                this._screenManager.EnableScreen(GameScreen.Credits);
         }
 
         public void QuitButtonClicked()
@@ -311,7 +310,7 @@ public class GameManagerScript : MonoBehaviour
                 foreach (var element in this._gameObjects)
                         Destroy(element);
                 this._gameObjects.Clear();
-                this._screenManager.EnableScreen(Screen.Menu);
+                this._screenManager.EnableScreen(GameScreen.Menu);
         }
 
         #endregion
