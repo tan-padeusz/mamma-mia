@@ -30,6 +30,7 @@ public class GameManagerScript : MonoBehaviour
         private GameSettings _gameSettings;
         private ScreenManager _screenManager;
         private float _startTime;
+        private bool _hasGameStarted;
 
         public static int GetTurretsForTeam(Team team)
         {
@@ -168,22 +169,21 @@ public class GameManagerScript : MonoBehaviour
         
         private void SpawnTurrets(int gridSize, int gridNodeDistance, int turrets)
         {
-                var size = gridSize;
-                var grid = new bool[size, size];
+                var grid = new bool[gridSize, gridSize];
                 grid[0, 0] = true;
-                grid[size - 1, size - 1] = true;
+                grid[gridSize - 1, gridSize - 1] = true;
                 
                 for (var index = 0; index < turrets; index++)
                 {
                         int row, column;
                         do
                         {
-                                row = UnityEngine.Random.Range(0, size);
-                                column = UnityEngine.Random.Range(0, size);
+                                row = UnityEngine.Random.Range(0, gridSize);
+                                column = UnityEngine.Random.Range(0, gridSize);
                         } while (grid[row, column]);
                         grid[row, column] = true;
 
-                        var center = size / 2;
+                        var center = gridSize / 2;
                         var xPosition = (column - center) * gridNodeDistance;
                         var zPosition = (center - row) * gridNodeDistance;
                         var position = new Vector3(xPosition, 0.5F, zPosition);
@@ -254,6 +254,9 @@ public class GameManagerScript : MonoBehaviour
 
         public void StartButtonClicked()
         {
+                if (this._hasGameStarted) return;
+                this._hasGameStarted = true;
+
                 Time.timeScale = 1;
                 Cursor.lockState = CursorLockMode.Confined;
                 
@@ -267,6 +270,10 @@ public class GameManagerScript : MonoBehaviour
                 this.SpawnPlayers(gridSize, gridNodeDistance);
                 this.SpawnTurrets(gridSize, gridNodeDistance, turrets);
                 this.SpawnObstacles(gridSize, gridNodeDistance, obstacles);
+                
+                var center = new Vector3(0, 0.5F, 0);
+                this.playerBlueCamera.transform.LookAt(center);
+                this.playerRedCamera.transform.LookAt(center);
 
                 this._turretCount[Team.Blue] = 0;
                 this._turretCount[Team.Neutral] = turrets;
@@ -310,6 +317,7 @@ public class GameManagerScript : MonoBehaviour
                 foreach (var element in this._gameObjects)
                         Destroy(element);
                 this._gameObjects.Clear();
+                this._hasGameStarted = false;
                 this._screenManager.EnableScreen(GameScreen.Menu);
         }
 
