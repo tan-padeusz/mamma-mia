@@ -9,8 +9,8 @@ public class PlayerScript : MonoBehaviour
     [Header("Bullet")]
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private int bulletDamage = 1;
-    [SerializeField] private float bulletInterval = 0.2F;
-    [SerializeField] private float bulletSpeed = 15F;
+    [SerializeField] private float bulletInterval = 0.35F;
+    [SerializeField] private float bulletSpeed = 12.5F;
     private bool _canShoot = true;
     
     [Header("Player")]
@@ -119,6 +119,7 @@ public class PlayerScript : MonoBehaviour
         };
         
         this._cameraTransform = cameraTransform;
+        this._cameraTransform.LookAt(new Vector3(0, 0, 0));
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -132,24 +133,25 @@ public class PlayerScript : MonoBehaviour
     private void ModifySpeed(Team team)
     {
         if (this._isSpeedModified) return;
-        var turretCount = GameManagerScript.GetTurretsForTeam(this._myTeam);
+        var turretCount = Math.Max(GameManagerScript.GetTurretsForTeam(this._myTeam), 1);
+        var turretCountRoot = (float) Math.Pow(turretCount, 0.25);
         this._isSpeedModified = true;
-        this.StartCoroutine(team == this._myTeam ? this.SpeedUp(turretCount) : this.SlowDown(turretCount));
+        this.StartCoroutine(team == this._myTeam ? this.SpeedUp(turretCountRoot) : this.SlowDown(turretCountRoot));
     }
 
-    private IEnumerator SpeedUp(double turretCount)
+    private IEnumerator SpeedUp(float value)
     {
         var currentSpeed = this.movementSpeed;
-        this.movementSpeed *= (float) Math.Sqrt(turretCount);
+        this.movementSpeed *= value;
         yield return new WaitForSeconds(this.bdTime);
         this.movementSpeed = currentSpeed;
         this._isSpeedModified = false;
     }
 
-    private IEnumerator SlowDown(double turretCount)
+    private IEnumerator SlowDown(float value)
     {
         var currentSpeed = this.movementSpeed;
-        this.movementSpeed /= (float) Math.Sqrt(turretCount);
+        this.movementSpeed /= value;
         yield return new WaitForSeconds(this.bdTime);
         this.movementSpeed = currentSpeed;
         this._isSpeedModified = false;

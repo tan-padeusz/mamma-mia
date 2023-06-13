@@ -47,6 +47,7 @@ public class BulletScript : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        Destroy(this.gameObject);
         if (collision.collider.CompareTag("Turret"))
         {
             var turretScript = collision.gameObject.GetComponent<TurretScript>();
@@ -56,7 +57,7 @@ public class BulletScript : MonoBehaviour
             if (turretScript.DecreaseHealth(this._damage) > 0) return;
             turretScript.ResetTurret(this._myTeam);
         }
-        this.SelfDestruct();
+        Destroy(this);
     }
 
     public void ResetBullet(Team team, int damage, float speed)
