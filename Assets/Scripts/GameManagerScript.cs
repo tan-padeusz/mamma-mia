@@ -152,7 +152,6 @@ public class GameManagerScript : MonoBehaviour
                 var playerBlueScript = playerBlue.GetComponent<PlayerScript>();
                 if (playerBlueScript != null)
                 {
-                        playerBlueScript.SetGameManager(this);
                         playerBlueScript.ResetPlayer(Team.Blue, this.playerBlueCamera.transform);
                 }
                 this._gameObjects.Add(playerBlue);
@@ -161,7 +160,6 @@ public class GameManagerScript : MonoBehaviour
                 var playerRedScript = playerRed.GetComponent<PlayerScript>();
                 if (playerRedScript != null)
                 {
-                        playerRedScript.SetGameManager(this);
                         playerRedScript.ResetPlayer(Team.Red, this.playerRedCamera.transform);
                 }
                 this._gameObjects.Add(playerRed);
@@ -186,7 +184,7 @@ public class GameManagerScript : MonoBehaviour
                         var center = gridSize / 2;
                         var xPosition = (column - center) * gridNodeDistance;
                         var zPosition = (center - row) * gridNodeDistance;
-                        var position = new Vector3(xPosition, 0.5F, zPosition);
+                        var position = new Vector3(xPosition, 0.325F, zPosition);
                         var turretPrefab = this.turretPrefabs[UnityEngine.Random.Range(0, this.turretPrefabs.Count)];
                         var turret = Instantiate(turretPrefab, position, new Quaternion());
                         turret.GetComponent<TurretScript>().SetCamera(this.playerBlueCamera, this.playerRedCamera);

@@ -67,9 +67,6 @@ LightmapSettings:
     m_LightmapParameters: {fileID: 0}
     m_LightmapsBakeMode: 1
     m_TextureCompression: 1
-    m_FinalGather: 0
-    m_FinalGatherFiltering: 1
-    m_FinalGatherRayCount: 256
     m_ReflectionCompression: 2
     m_MixedBakeMode: 2
     m_BakeBackend: 1
@@ -8145,7 +8142,7 @@ MonoBehaviour:
   groundPrefab: {fileID: 230598811098978208, guid: fc878160a69339a41bd09f4fa0b24513, type: 3}
   playerPrefab: {fileID: 598931724242233961, guid: bffe5195298770f459447569f660d12d, type: 3}
   turretPrefabs:
-  - {fileID: 472566400291597947, guid: 6dab08eab5e59f34cb6e58d2dae17f7c, type: 3}
+  - {fileID: 2419283716359558615, guid: 84bd3b4bf9e5d91408bedb3d0b414a6e, type: 3}
   obstaclePrefab: {fileID: 7960582822761624303, guid: 912d7844c468e0e4d823d0451a59da9d, type: 3}
 --- !u!114 &1225112984
 MonoBehaviour:

@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class PlayerScript : MonoBehaviour
 {
-    private GameManagerScript _gameManager;
-    
     [Header("Bullet")]
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private int bulletDamage = 1;
@@ -155,10 +153,5 @@ public class PlayerScript : MonoBehaviour
         yield return new WaitForSeconds(this.bdTime);
         this.movementSpeed = currentSpeed;
         this._isSpeedModified = false;
-    }
-
-    public void SetGameManager(GameManagerScript gameManager)
-    {
-        this._gameManager = gameManager;
     }
 }
